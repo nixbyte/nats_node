@@ -1,0 +1,10 @@
+{
+	"client_hostname" : "localhost",
+	"connection_timeout" : 60,
+	"keepalive" : 60,
+	"max_idle_connections" : 65500,
+	"max_idle_conns_per_host" : 65500,
+	"tls_handshake_timeout" : 20,
+	"response_header_timeout" : 60,
+	"timeout" : 120
+}

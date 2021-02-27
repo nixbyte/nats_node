@@ -1,0 +1,5 @@
+pkg/
+bin/
+src/nats_node/vendor/
+src/nats_node§/bin/
+.idea
