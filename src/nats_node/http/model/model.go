@@ -1,6 +1,12 @@
 package model
 
-type Token struct {
+type ApiResponse struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Model   interface{} `json:"model"`
+}
+
+type MfcList struct {
 	Notifications []interface{} `json:"notifications"`
 	BranchList    []struct {
 		AddressState   interface{} `json:"addressState"`

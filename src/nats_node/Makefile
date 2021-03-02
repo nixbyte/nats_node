@@ -1,14 +1,26 @@
 CGO_ENABLED=0
 GOPATH=${CURDIR}/../..:${CURDIR}
+	
 
-build: linux  mac
-	go build -o bin/main ./main.go
+build: build_server build_client
 
-linux:
-	GOOS=linux GOARCH=amd64 go build -o bin/main_linux ./main.go
+build_server: linux_server  mac_server
+	go build -o bin/current_server ./server.go
 
-mac:
-	GOOS=darwin GOARCH=amd64 go build -o bin/main_darwin ./main.go
+linux_server:
+	GOOS=linux GOARCH=amd64 go build -o bin/server_linux ./server.go
+
+mac_server:
+	GOOS=darwin GOARCH=amd64 go build -o bin/server_darwin ./server.go
+
+build_client: linux_client  mac_client
+	go build -o bin/current_client ./client.go
+
+linux_client:
+	GOOS=linux GOARCH=amd64 go build -o bin/client_linux ./client.go
+
+mac_client:
+	GOOS=darwin GOARCH=amd64 go build -o bin/client_darwin ./client.go
 
 init:
 	dep init
@@ -24,7 +36,6 @@ status:
 
 check:
 	dep check
-
 
 f:
 	gofmt -l -s -w `find . -type f -name '*.go' -not -path "./vendor/*"`

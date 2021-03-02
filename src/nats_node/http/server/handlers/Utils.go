@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"nats_node/http/client/model"
+	"nats_node/http/model"
 	"nats_node/utils/logger"
 	"runtime/debug"
 

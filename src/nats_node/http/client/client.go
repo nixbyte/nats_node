@@ -77,10 +77,6 @@ func prepareRequest(request *HttpRequest) (*http.Request, error) {
 		request.Endpoint = sb.String()
 	}
 
-	fmt.Println("Request Body")
-	fmt.Println(request.Body)
-	fmt.Println(len(request.BodyMap))
-
 	if len(request.BodyMap) > 0 {
 
 		bodyJson, _ := json.Marshal(request.BodyMap)
