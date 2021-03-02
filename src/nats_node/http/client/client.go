@@ -48,7 +48,7 @@ type HttpRequest struct {
 func init() {
 	fmt.Println("Init Client...")
 
-	Client = NewClient(configs.SetDefaultConfig())
+	Client = NewClient(configs.SetDefaultClientConfig())
 
 }
 

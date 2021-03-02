@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"nats_node/http/server"
 	"nats_node/http/server/handlers"
+	nats_client "nats_node/nats"
 	"nats_node/utils/monitoring"
 
+	"github.com/nats-io/nats.go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
@@ -23,6 +26,10 @@ func main() {
 	server.Start()
 
 	server.Api.AddHandlerToRoute("/health/GetToken", handlers.TokenHandler)
+
+	nats_client.NatsConnection.Subscribe("token", func(m *nats.Msg) {
+		fmt.Printf("Received a message: %s\n", string(m.Data))
+	})
 
 	if monitoring.Monitoring.WRITE_METRICS {
 		server.MetricApi.AddHandlerToRoute("/state", fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler()))

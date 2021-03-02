@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"nats_node/configs"
 	"nats_node/utils/logger"
 	"nats_node/utils/monitoring"
 	"os"
@@ -12,14 +13,6 @@ import (
 
 	"github.com/valyala/fasthttp"
 )
-
-type ServerConfig struct {
-	DefaultIP    string `json:"server_hostname"`
-	DefaultPort  string `json:"server_port"`
-	ReadTimeout  int    `json:"server_read_timeout"`
-	WriteTimeout int    `json:"server_write_timeout"`
-	Concurancy   int    `json:"server_concurancy"`
-}
 
 type apistruct struct {
 	router  map[string]fasthttp.RequestHandler
@@ -30,15 +23,15 @@ var (
 	server       *fasthttp.Server
 	MetricServer *fasthttp.Server
 	Api          apistruct
-	Config       *ServerConfig
-	MetricConfig *ServerConfig
+	Config       *configs.ServerConfig
+	MetricConfig *configs.ServerConfig
 	MetricApi    apistruct
 )
 
 func init() {
 	fmt.Println("Init Server...")
 
-	Config = setConfig()
+	Config = configs.SetDefaultServerConfig()
 
 	Api = apistruct{
 		router: make(map[string]fasthttp.RequestHandler),
@@ -98,40 +91,8 @@ func init() {
 	}
 }
 
-func setConfig() *ServerConfig {
-	config := &ServerConfig{
-		"localhost",
-		"8080",
-		60,
-		60,
-		65535,
-	}
-
-	value, isSet := os.LookupEnv("CONFIG_PATH")
-
-	if isSet && value != "" {
-
-		fileName := value + "/server_config.json"
-		configFile, err := ioutil.ReadFile(fileName)
-
-		if err != nil {
-			logger.Logger.PrintWarn(err.Error())
-		} else {
-			json.Unmarshal(configFile, &config)
-		}
-	} else {
-		fmt.Println("Server config environment variable CONFIG_PATH not set")
-		fmt.Println("Apply default config")
-	}
-
-	fmt.Println("Server config")
-	fmt.Println(config)
-
-	return config
-}
-
-func setMetricsConfig() *ServerConfig {
-	config := &ServerConfig{
+func setMetricsConfig() *configs.ServerConfig {
+	config := &configs.ServerConfig{
 		"localhost",
 		"8081",
 		60,

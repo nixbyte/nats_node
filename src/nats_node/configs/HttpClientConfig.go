@@ -19,9 +19,9 @@ type ClientConfig struct {
 	Timeout               int    `json:"timeout"`
 }
 
-func SetDefaultConfig() *ClientConfig {
+func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"http://localhost",
+		"http://10.129.157.90:8080",
 		60,
 		60,
 		65500,
@@ -31,7 +31,7 @@ func SetDefaultConfig() *ClientConfig {
 		120,
 	}
 
-	value, isSet := os.LookupEnv("SERVER_CONFIG_PATH")
+	value, isSet := os.LookupEnv("ELK_CONFIG_PATH")
 
 	if isSet && value != "" {
 

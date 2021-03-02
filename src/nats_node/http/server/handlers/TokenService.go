@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"nats_node/http/client/request"
 	"nats_node/utils/logger"
 
@@ -9,7 +11,8 @@ import (
 
 var TokenHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
-	tk, err := request.GetToken()
+	token, err := request.GetToken()
 	logger.Logger.PrintError(err)
-	getResult(ctx, tk)
+	bytes, err := getBytes(token)
+	fmt.Println(string(bytes))
 }

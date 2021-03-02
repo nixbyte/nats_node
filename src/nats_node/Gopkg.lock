@@ -32,8 +32,8 @@
     "zlib",
   ]
   pruneopts = "UT"
-  revision = "68c93109d0e4b098f0866fb1eebd0c215dfcc55f"
-  version = "v1.11.8"
+  revision = "a576225a10eb8feafd84f269df11f0c26b7139e0"
+  version = "v1.11.9"
 
 [[projects]]
   digest = "1:304d25ecc3f4ca39f894c959254d3f5fc6176276ccf1f874ded0cd441e2f964f"
@@ -74,6 +74,42 @@
   pruneopts = "UT"
   revision = "aebf8a7d67ab4625e0fd4a665766fef9a709161b"
   version = "v1"
+
+[[projects]]
+  digest = "1:fd0b15c0523f80baccb0e79da0922bcfc0a907a63135caceff5e5985c22f2465"
+  name = "github.com/nats-io/jwt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0ea326566cb17313ecf982b6370758a0ac4bc7fd"
+  version = "v1.2.2"
+
+[[projects]]
+  digest = "1:f62b1537052fa6b95df7bdcb8715d9ff0e825cf83449c9bc4072ca559a0b0196"
+  name = "github.com/nats-io/nats.go"
+  packages = [
+    ".",
+    "encoders/builtin",
+    "util",
+  ]
+  pruneopts = "UT"
+  revision = "120703c6d80965e2f1e7a542c88dc574987b17e1"
+  version = "v1.10.0"
+
+[[projects]]
+  digest = "1:a71735cd95d05d4fe72ca8a4184c49164f12a83b0ea439f2388e69e5dabb18ca"
+  name = "github.com/nats-io/nkeys"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3653aeb9baf610b5d160bbafc89e3470a47e08c8"
+  version = "v0.2.0"
+
+[[projects]]
+  digest = "1:599f3202ce0a754144ddc4be4c6df9c6ab27b1d722a63ede6b2e0c3a2cc338a8"
+  name = "github.com/nats-io/nuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4b96681fa6d28dd0ab5fe79bac63b3a493d9ee94"
+  version = "v1.0.1"
 
 [[projects]]
   digest = "1:eb04f69c8991e52eff33c428bd729e04208bf03235be88e4df0d88497c6861b9"
@@ -142,7 +178,18 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7600cfa561e55abbd27771efec2f73bcf2b1c76d3bd28cf2b134a3104c73dbdd"
+  digest = "1:30c9be227290b64dc4d02ddd0be56777f03ed61148e360a9e8bf456de75b0d44"
+  name = "golang.org/x/crypto"
+  packages = [
+    "ed25519",
+    "ed25519/internal/edwards25519",
+  ]
+  pruneopts = "UT"
+  revision = "5ea612d1eb830b38bc4e914e37f55311eb58adce"
+
+[[projects]]
+  branch = "master"
+  digest = "1:de9b509cc299b0b774da8a3ccfc895f926debc4feaee78d11278d7a0c176b19b"
   name = "golang.org/x/sys"
   packages = [
     "internal/unsafeheader",
@@ -150,7 +197,7 @@
     "windows",
   ]
   pruneopts = "UT"
-  revision = "b0d1d43c014ddb3da33b73f355a28f7b5bb0cb79"
+  revision = "77cc2087c03b9062d8eb49dd60e665cbd7c1cde2"
 
 [[projects]]
   digest = "1:fd328c5b52e433ea3ffc891bcc4f94469a82bf478558208db2b386aad8a304a1"
@@ -195,6 +242,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/mgutz/logxi/v1",
+    "github.com/nats-io/nats.go",
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
     "github.com/valyala/fasthttp",
