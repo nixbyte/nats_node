@@ -29,7 +29,7 @@ func SetDefaultServerConfig() *ServerConfig {
 
 	if isSet && value != "" {
 
-		fileName := value + "/http_server_config.json"
+		fileName := value + "/server_config.json"
 		configFile, err := ioutil.ReadFile(fileName)
 
 		if err != nil {

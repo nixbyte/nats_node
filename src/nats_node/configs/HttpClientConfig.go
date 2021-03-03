@@ -35,7 +35,7 @@ func SetDefaultClientConfig() *ClientConfig {
 
 	if isSet && value != "" {
 
-		fileName := value + "/http_client_config.json"
+		fileName := value + "/client_config.json"
 		configFile, err := ioutil.ReadFile(fileName)
 		if err != nil {
 			logger.Logger.PrintWarn(err.Error())
