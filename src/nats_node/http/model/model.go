@@ -6,6 +6,13 @@ type ApiResponse struct {
 	Model   interface{} `json:"model"`
 }
 
+type Token struct {
+	Success    bool   `json:"success"`
+	Resultcode int    `json:"resultcode"`
+	Message    string `json:"message"`
+	Content    string `json:"content"`
+}
+
 type MfcList struct {
 	Notifications []interface{} `json:"notifications"`
 	BranchList    []struct {

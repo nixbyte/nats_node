@@ -4,29 +4,27 @@ import (
 	"log"
 	"nats_node/http/client"
 	"nats_node/utils/logger"
-	"strings"
 	"time"
 
 	"github.com/nats-io/nats.go"
 )
 
-func GetMfcList() {
+func GetToken() {
 	//	nats_sender.Configure()
 	//	nats_sender.Connect()
 	//	nats_sender.Subscribe()
 	request := client.NewRequest()
 
 	request.Rt = client.GET
-	request.Endpoint = "/calendar-backend/public/api/v1/branches"
+	request.Endpoint = "/health/GetToken"
 
 	response, err := client.SendRequest(request)
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
-	servers := []string{"nats://192.168.49.91:4222", "nats://192.168.49.92:4222"}
-
-	nc, err := nats.Connect(strings.Join(servers, ","), nats.NoEcho())
-	//	nc, err := nats.Connect("localhost:4222", nats.NoEcho())
+	//servers := []string{"nats://192.168.49.91:4222", "nats://192.168.49.92:4222"}
+	//nc, err := nats.Connect(strings.Join(servers, ","), nats.NoEcho())
+	nc, err := nats.Connect("localhost:4222", nats.NoEcho())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,14 +35,14 @@ func GetMfcList() {
 		log.Fatal(err)
 	}
 
-	sub, err := NatsConnection.Conn.SubscribeSync("mfc")
+	sub, err := NatsConnection.Conn.SubscribeSync("token")
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
 
 	for {
 		// Wait for a message
-		msg, err := sub.NextMsg(1 * time.Second)
+		msg, err := sub.NextMsg(10 * time.Minute)
 		if err != nil {
 			logger.Logger.PrintError(err)
 		}

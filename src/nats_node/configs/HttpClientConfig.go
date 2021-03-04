@@ -21,7 +21,7 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"http://10.129.157.90:8080",
+		"http://covid-api.spb.dev",
 		60,
 		60,
 		65500,

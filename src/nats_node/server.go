@@ -22,7 +22,7 @@ func main() {
 
 	server.Start()
 
-	server.Api.AddHandlerToRoute("/mfc/GetMfcList", handlers.MfcListHandler)
+	server.Api.AddHandlerToRoute("/health/Token", handlers.TokenHandler)
 
 	if monitoring.Monitoring.WRITE_METRICS {
 		server.MetricApi.AddHandlerToRoute("/state", fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler()))

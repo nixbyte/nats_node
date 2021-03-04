@@ -26,5 +26,5 @@ func main() {
 		server.MetricApi.AddHandlerToRoute("/metrics", fasthttpadaptor.NewFastHTTPHandler(promhttp.HandlerFor(monitoring.Registry, promhttp.HandlerOpts{})))
 	}
 
-	request.GetMfcList()
+	request.GetToken()
 }
