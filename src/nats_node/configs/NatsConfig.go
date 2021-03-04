@@ -11,6 +11,15 @@ type NatsConfig struct {
 	SecurityConf   Security   `json:"security"`
 }
 
+type NatsDefaultConfigBuilder struct {
+	MessagingConf  Messaging  `json:"messaging"`
+	SubscriberConf Subscriber `json:"subscriber"`
+	PublisherConf  Publisher  `json:"publisher"`
+	ConnectConf    Connect    `json:"connect"`
+	ReconnectConf  Reconnect  `json:"reconnect"`
+	SecurityConf   Security   `json:"security"`
+}
+
 type Messaging struct {
 	MsgMod          string `json:"msgMod"`
 	MsgWaitInterval int    `json:"msgWaitInterval"`
