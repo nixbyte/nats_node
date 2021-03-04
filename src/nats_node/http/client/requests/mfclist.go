@@ -1,16 +1,19 @@
 package request
 
 import (
+	"log"
 	"nats_node/http/client"
-	nats_client "nats_node/nats"
 	"nats_node/utils/logger"
+	"strings"
+	"time"
+
+	"github.com/nats-io/nats.go"
 )
 
 func GetMfcList() {
-	nats_client.Configure()
-	nats_client.Connect()
-	nats_client.Subscribe()
-
+	//	nats_sender.Configure()
+	//	nats_sender.Connect()
+	//	nats_sender.Subscribe()
 	request := client.NewRequest()
 
 	request.Rt = client.GET
@@ -20,8 +23,34 @@ func GetMfcList() {
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
+	servers := []string{"nats://192.168.49.91:4222", "nats://192.168.49.92:4222"}
 
-	nats_client.SendResponse(response)
+	nc, err := nats.Connect(strings.Join(servers, ","), nats.NoEcho())
+	//	nc, err := nats.Connect("localhost:4222", nats.NoEcho())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer nc.Close()
 
-	defer nats_client.Disconnect()
+	NatsConnection, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sub, err := NatsConnection.Conn.SubscribeSync("mfc")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(1 * time.Second)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
+		msg.Respond(response)
+		break
+	}
+	sub.Unsubscribe()
+	defer NatsConnection.Close()
 }

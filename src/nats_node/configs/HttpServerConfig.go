@@ -35,10 +35,13 @@ func SetDefaultServerConfig() *ServerConfig {
 		if err != nil {
 			logger.Logger.PrintWarn(err.Error())
 		} else {
-			json.Unmarshal(configFile, &config)
+			err := json.Unmarshal(configFile, config)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	} else {
-		fmt.Println("Server config environment variable CONFIG_PATH not set")
+		fmt.Println("Server config environment variable ELK_CONFIG_PATH not set")
 		fmt.Println("Apply default config")
 	}
 

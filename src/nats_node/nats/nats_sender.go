@@ -1,14 +1,23 @@
 package nats_client
 
 import (
-	"nats_node/configs"
-	"nats_node/utils/logger"
+	"log"
+
+	"github.com/nats-io/nats.go"
 )
 
+var NatsConnection *nats.EncodedConn
+
 func init() {
-	NCConfig := configs.GetDefaultConfig()
-	NatsConnect, err := NCConfig.ParseConfig()
+
+	nc, err := nats.Connect("localhost:4222", nats.NoEcho())
 	if err != nil {
-		logger.Logger.PrintError(err)
+		log.Fatal(err)
+	}
+	defer nc.Close()
+
+	NatsConnection, err = nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	if err != nil {
+		log.Fatal(err)
 	}
 }

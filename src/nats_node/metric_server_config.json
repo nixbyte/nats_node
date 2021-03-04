@@ -1,6 +1,6 @@
 {
 	"server_hostname" : "localhost",
-	"server_port" : "8889",
+	"server_port" : "8888",
 	"server_read_timeout" : 60,
 	"server_write_timeout" : 60,
 	"server_concurancy" : 65535

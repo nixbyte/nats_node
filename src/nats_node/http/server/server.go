@@ -100,7 +100,7 @@ func setMetricsConfig() *configs.ServerConfig {
 		65535,
 	}
 
-	value, isSet := os.LookupEnv("METRIC_CONFIG_PATH")
+	value, isSet := os.LookupEnv("ELK_CONFIG_PATH")
 
 	if isSet && value != "" {
 
@@ -108,7 +108,7 @@ func setMetricsConfig() *configs.ServerConfig {
 		configFile, err := ioutil.ReadFile(fileName)
 		logger.Logger.PrintError(err)
 
-		json.Unmarshal(configFile, &config)
+		json.Unmarshal(configFile, config)
 	} else {
 		fmt.Println("Server config environment variable METRIC_CONFIG_PATH not set")
 		fmt.Println("Apply default config")
