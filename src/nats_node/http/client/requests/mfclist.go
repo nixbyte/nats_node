@@ -1,7 +1,6 @@
 package request
 
 import (
-	"log"
 	"nats_node/http/client"
 	"nats_node/utils/logger"
 	"time"
@@ -24,15 +23,15 @@ func GetToken() {
 	}
 	//servers := []string{"nats://192.168.49.91:4222", "nats://192.168.49.92:4222"}
 	//nc, err := nats.Connect(strings.Join(servers, ","), nats.NoEcho())
-	nc, err := nats.Connect("localhost:4222", nats.NoEcho())
+	nc, err := nats.Connect("localhost:4222", nats.Name("api"), nats.NoEcho())
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.PrintError(err)
 	}
 	defer nc.Close()
 
 	NatsConnection, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.PrintError(err)
 	}
 
 	sub, err := NatsConnection.Conn.SubscribeSync("token")

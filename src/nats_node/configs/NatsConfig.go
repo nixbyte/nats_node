@@ -37,6 +37,7 @@ type Publisher struct {
 }
 
 type Connect struct {
+	ConnectionName          string   `json:"connectionName"`
 	ConnectionType          string   `json:"connectionType"`
 	Servers                 []string `json:"servers"`
 	VerboseMod              bool     `json:"verboseMod"`

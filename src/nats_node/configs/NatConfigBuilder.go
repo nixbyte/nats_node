@@ -35,6 +35,25 @@ type NatsConfigBuilder interface {
 
 func init() {
 	NatsConf = &NatsConfig{
+		ConnectConf: Connect{
+			ConnectionName:          "api",
+			ConnectionType:          "server",
+			Servers:                 []string{"localhost:4222"},
+			VerboseMod:              true,
+			EchoMod:                 true,
+			ConnectionTimeout:       10,
+			ConnectionTimeoutDigits: "sec",
+			PingMod:                 false,
+			PingInterval:            10,
+			PingIntervalDigits:      "sec",
+			PingMaxOutstanding:      5,
+		},
+		ReconnectConf: Reconnect{
+			ReconnectAttempts:     5,
+			ReconnectWait:         60,
+			ReconnectWaitDigits:   "sec",
+			ListenReconnectEvents: false,
+		},
 		MessagingConf: Messaging{
 			MsgMod:          "sync",
 			MsgWaitInterval: 1,
@@ -56,24 +75,6 @@ func init() {
 		PublisherConf: Publisher{
 			ReplyToSubject: "subject",
 			IsJSONData:     true,
-		},
-		ConnectConf: Connect{
-			ConnectionType:          "server",
-			Servers:                 []string{"localhost:4222"},
-			VerboseMod:              true,
-			EchoMod:                 true,
-			ConnectionTimeout:       10,
-			ConnectionTimeoutDigits: "sec",
-			PingMod:                 false,
-			PingInterval:            10,
-			PingIntervalDigits:      "sec",
-			PingMaxOutstanding:      5,
-		},
-		ReconnectConf: Reconnect{
-			ReconnectAttempts:     5,
-			ReconnectWait:         60,
-			ReconnectWaitDigits:   "sec",
-			ListenReconnectEvents: false,
 		},
 		SecurityConf: Security{
 			AuthMod:  false,
