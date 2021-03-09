@@ -1,0 +1,10 @@
+image:
+  mygolang
+
+stages:
+- build
+
+MakeSources:
+  stage: build
+  script:
+    make -C nats_node/src/nats_node/make
