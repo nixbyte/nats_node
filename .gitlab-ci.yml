@@ -1,0 +1,10 @@
+image:
+  mygolang:mygo
+
+stages:
+- build
+
+MakeSources:
+  stage: build
+  script:
+    - make -C src/nats_node/
