@@ -21,7 +21,7 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"http://covid-api.spb.dev",
+		"http://mfcapi.spb.dev",
 		60,
 		60,
 		65500,

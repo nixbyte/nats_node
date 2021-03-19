@@ -60,7 +60,7 @@ func (c *NatsDefaultConfigBuilder) Config() (*NatsConfig, error) {
 		ConnectConf: Connect{
 			ConnectionName:          "api",
 			ConnectionType:          "server",
-			Servers:                 []string{"localhost:4222"},
+			Servers:                 []string{"localhost:4111"},
 			VerboseMod:              true,
 			EchoMod:                 true,
 			ConnectionTimeout:       10,
@@ -119,12 +119,31 @@ func (c *NatsDefaultConfigBuilder) Config() (*NatsConfig, error) {
 		},
 	}
 
-	c.ConnectConf.parceConnectionConfig(&NatsConf.ConnectConf)
+	c.ConnectConf.parseConnectionConfig(&NatsConf.ConnectConf)
+	c.MessagingConf.parseMessagingConfig(&NatsConf.MessagingConf)
+	//	c.SubscriberConf.parseSubscriberConfig(&NatsConf.SubscriberConf)
+	//	c.PublisherConf.parsePablisherConfig(&NatsConf.PublisherConf)
+	//	c.ReconnectConf.parseReconnectConfig(&NatsConf.ReconnectConf)
+	//	c.SecurityConf.parseSecurityConfig(&NatsConf.SecurityConf)
 
 	return NatsConf, nil
 }
 
-func (b *Connect) parceConnectionConfig(c *Connect) {
+func (b *Messaging) parseMessagingConfig(m *Messaging) {
+	if len(b.MsgMod) != 0 {
+		m.MsgMod = b.MsgMod
+	}
+
+	if b.MsgWaitInterval != 0 {
+		m.MsgWaitInterval = m.MsgWaitInterval
+	}
+
+	if len(b.MsgWaitDigits) != 0 {
+		m.MsgWaitDigits = m.MsgWaitDigits
+	}
+}
+
+func (b *Connect) parseConnectionConfig(c *Connect) {
 	if len(b.ConnectionName) != 0 {
 		c.ConnectionName = b.ConnectionName
 	}

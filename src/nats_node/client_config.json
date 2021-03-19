@@ -1,5 +1,5 @@
 {
-	"client_hostname" : "https://covid-api.spb.dev",
+	"client_hostname" : "https://mfcapi.spb.dev",
 	"connection_timeout" : 60,
 	"keepalive" : 60,
 	"max_idle_connections" : 65500,

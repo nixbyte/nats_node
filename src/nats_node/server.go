@@ -22,7 +22,14 @@ func main() {
 
 	server.Start()
 
-	server.Api.AddHandlerToRoute("/health/Token", handlers.TokenHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetAppState", handlers.GetAppStateHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetMfcList", handlers.BranchesHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetMfcServices", handlers.BranchServiceHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetDates", handlers.DatesHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetTimes", handlers.TimesHandler)
+	server.Api.AddHandlerToRoute("/mfc/ReserveTime", handlers.ReservationHandler)
+	server.Api.AddHandlerToRoute("/mfc/TimeConfirmation", handlers.TimeConfirmationHandler)
+	server.Api.AddHandlerToRoute("/mfc/GetReservationCode", handlers.ReservationCodeHandler)
 
 	if monitoring.Monitoring.WRITE_METRICS {
 		server.MetricApi.AddHandlerToRoute("/state", fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler()))

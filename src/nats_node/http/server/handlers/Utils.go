@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"nats_node/http/model"
 	"nats_node/utils/logger"
@@ -51,5 +53,29 @@ func sendModelIfExist(ctx *fasthttp.RequestCtx, m interface{}, err error) {
 			Model:   m,
 		}
 		getResult(ctx, resp)
+	}
+}
+func checkIfExistParameter(ctx *fasthttp.RequestCtx, name string) (bool, error) {
+	parameter := ctx.QueryArgs().Peek(name)
+	if len(parameter) == 0 {
+		return false, errors.New("Query parameter " + string(parameter) + " not found")
+	} else {
+		return true, nil
+	}
+}
+
+func validateParameters(ctx *fasthttp.RequestCtx, params []string) (bool, error) {
+	var buffer bytes.Buffer
+	for _, param := range params {
+		exist, _ := checkIfExistParameter(ctx, param)
+		if exist != true {
+			buffer.WriteString(" " + param + " ")
+		}
+	}
+
+	if len(buffer.Bytes()) != 0 {
+		return false, errors.New("Query parameters" + buffer.String() + " not found")
+	} else {
+		return true, nil
 	}
 }

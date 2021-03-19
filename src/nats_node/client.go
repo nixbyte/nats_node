@@ -26,5 +26,14 @@ func main() {
 		server.MetricApi.AddHandlerToRoute("/metrics", fasthttpadaptor.NewFastHTTPHandler(promhttp.HandlerFor(monitoring.Registry, promhttp.HandlerOpts{})))
 	}
 
-	request.GetToken()
+	go request.GetAppState()
+	go request.GetBranches()
+	go request.GetBranchServices()
+	go request.GetDates()
+	go request.GetTimes()
+	go request.ReserveTime()
+	go request.TimeConfirmation()
+	go request.GetReservationCode()
+
+	select {}
 }
