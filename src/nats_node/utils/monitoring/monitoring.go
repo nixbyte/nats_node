@@ -29,7 +29,7 @@ var Monitoring *monitoring
 func init() {
 	fmt.Println("Init Monitoring...")
 	Monitoring = &monitoring{
-		DEBUG_HTTP:    false,
+		DEBUG_HTTP:    true,
 		WRITE_METRICS: true,
 		signalChan:    make(chan os.Signal),
 		ExitChan:      make(chan int),

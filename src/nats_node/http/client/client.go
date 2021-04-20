@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"nats_node/configs"
+	"log"
+	configs "nats_node/configs/http"
 	"nats_node/utils/logger"
 	"nats_node/utils/monitoring"
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -186,7 +188,14 @@ func (request HttpRequest) PrepareMetricName(prefix string) string {
 	metric := strings.Split(string(metricName), "/")
 	name := metric[len(metric)-1]
 
-	return prefix + name
+	reg, err := regexp.Compile("[а-яА-Я]")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	processedString := reg.ReplaceAllString(name, "")
+
+	return prefix + "_" + processedString
 }
 
 func NewRequest() *HttpRequest {

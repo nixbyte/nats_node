@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"nats_node/configs"
+	configs "nats_node/configs/http"
 	"nats_node/utils/logger"
 	"nats_node/utils/monitoring"
 	"os"
