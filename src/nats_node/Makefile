@@ -37,5 +37,14 @@ status:
 check:
 	dep check
 
+check_swagger:
+	which swagger || (dep ensure -add github.com/go-swagger/go-swagger/cmd/swagger)
+
+swagger: check_swagger
+	swagger generate spec -o ./docs/swagger/swagger.yaml --scan-models
+
+run_swagger: check_swagger
+	swagger serve -F=swagger ./docs/swagger/swagger.yaml
+
 f:
 	gofmt -l -s -w `find . -type f -name '*.go' -not -path "./vendor/*"`

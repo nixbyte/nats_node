@@ -2,11 +2,37 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"nats_node/http/model"
+	"nats_node/utils/logger"
 	"time"
 
 	"github.com/valyala/fasthttp"
 )
+
+//var FilesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+//	ctx.Response.Header.Set("Content-Type", "text/css; charset=utf-8")
+//}
+
+//var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+//
+//	httpSwagger.Handler(
+//		httpSwagger.URL("http://localhost:8082/docs/swagger.yaml"),
+//	).ServeHTTP(w, r)
+//})
+
+var SwaggerYamlHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+	ctx.SetContentType("application/json")
+
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+
+	bodyBytes, err := ioutil.ReadFile("../docs/swagger/swagger.yaml")
+	logger.Logger.PrintError(err)
+
+	fmt.Fprint(ctx, string(bodyBytes))
+}
 
 var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
