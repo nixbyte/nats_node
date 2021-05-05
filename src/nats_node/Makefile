@@ -23,19 +23,13 @@ mac_client:
 	GOOS=darwin GOARCH=amd64 go build -o bin/client_darwin ./client.go
 
 init:
-	dep init
+	go mod init
 
 ensure:
-	dep ensure
+	go mod vendor
 
 update:
-	dep ensure -update
-
-status:
-	dep status
-
-check:
-	dep check
+	go mod vendor
 
 check_swagger:
 	which swagger || (dep ensure -add github.com/go-swagger/go-swagger/cmd/swagger)
