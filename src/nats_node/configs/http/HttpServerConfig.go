@@ -12,13 +12,12 @@ import (
 )
 
 type NatsNodeHttpServersConfig struct {
-	HttpServerCfg    *ServerConfig `json:"response_server"`
-	MetricServerCfg  *ServerConfig `json:"metric_server"`
-	SwaggerServerCfg *ServerConfig `json:"swagger_server"`
+	HttpServerCfg   *ServerConfig `json:"response_server"`
+	MetricServerCfg *ServerConfig `json:"metric_server"`
 }
 
 func (natsNodeConfig *NatsNodeHttpServersConfig) String() string {
-	return fmt.Sprintf("{\nresponse_server : %v\nmetric_server : %v\nswagger_server : %v\n}", natsNodeConfig.HttpServerCfg, natsNodeConfig.MetricServerCfg, natsNodeConfig.SwaggerServerCfg)
+	return fmt.Sprintf("{\nresponse_server : %v\nmetric_server : %v\n}", natsNodeConfig.HttpServerCfg, natsNodeConfig.MetricServerCfg)
 }
 
 type ServerConfig struct {
@@ -59,18 +58,9 @@ func SetDefaultNatsNodeHttpServerConfig() *NatsNodeHttpServersConfig {
 		65535,
 	}
 
-	swaggerServerConfig := &ServerConfig{
-		"localhost",
-		"8082",
-		60,
-		60,
-		65535,
-	}
-
 	config := &NatsNodeHttpServersConfig{
 		responseServerConfig,
 		metricServerConfig,
-		swaggerServerConfig,
 	}
 
 	value, isSet := os.LookupEnv("ELK_CONFIG_PATH")
