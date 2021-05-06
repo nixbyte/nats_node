@@ -2,10 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"nats_node/http/model"
-	"nats_node/utils/logger"
 	"time"
 
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -15,19 +12,19 @@ import (
 
 var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 	httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8082/swagger/"),
+		httpSwagger.URL("/medal"),
 	))
 
-var SwaggerYamlHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
-	ctx.SetContentType("application/json")
-
-	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
-
-	bodyBytes, err := ioutil.ReadFile("../docs/swagger/swagger.yaml")
-	logger.Logger.PrintError(err)
-
-	fmt.Fprint(ctx, string(bodyBytes))
-}
+//var SwaggerYamlHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+//	ctx.SetContentType("application/json")
+//
+//	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+//
+//	bodyBytes, err := ioutil.ReadFile("../docs/swagger/swagger.yaml")
+//	logger.Logger.PrintError(err)
+//
+//	fmt.Fprint(ctx, string(bodyBytes))
+//}
 
 var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
