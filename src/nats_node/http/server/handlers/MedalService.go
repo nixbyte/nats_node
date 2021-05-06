@@ -8,20 +8,15 @@ import (
 	"nats_node/utils/logger"
 	"time"
 
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
-//var FilesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
-//	ctx.Response.Header.Set("Content-Type", "text/css; charset=utf-8")
-//}
-
-//var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//	w.Header().Add("Content-Type", "text/html; charset=utf-8")
-//
-//	httpSwagger.Handler(
-//		httpSwagger.URL("http://localhost:8082/docs/swagger.yaml"),
-//	).ServeHTTP(w, r)
-//})
+var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
+	httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8082/swagger/"),
+	))
 
 var SwaggerYamlHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	ctx.SetContentType("application/json")

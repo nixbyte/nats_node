@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fasthttp/router"
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 
 	"github.com/valyala/fasthttp"
@@ -27,14 +28,14 @@ type httpServer struct {
 }
 
 type apiStructure struct {
-	router  map[string]fasthttp.RequestHandler
+	router  *router.Router
 	Handler func(*fasthttp.RequestCtx)
 }
 
 func newApi() *apiStructure {
 	var a *apiStructure
 	a = &apiStructure{
-		router: make(map[string]fasthttp.RequestHandler),
+		router: router.New(),
 		Handler: func(ctx *fasthttp.RequestCtx) {
 
 			var url string = string(ctx.Request.RequestURI())
@@ -43,11 +44,7 @@ func newApi() *apiStructure {
 				url = url[:strings.IndexByte(url, '?')]
 			}
 
-			handler, ok := a.router[url]
-			if !ok {
-				ctx.NotFound()
-				return
-			}
+			handler := a.router.Handler
 			handler(ctx)
 		},
 	}
@@ -84,8 +81,8 @@ func init() {
 	}
 }
 
-func (apiServer httpServer) AddHandlerToRoute(route string, handler fasthttp.RequestHandler) {
-	apiServer.api.router[route] = handler
+func (apiServer httpServer) GetRouter() *router.Router {
+	return apiServer.api.router
 }
 
 func (httpServer *httpServer) runServer() {
