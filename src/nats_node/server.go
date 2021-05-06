@@ -41,9 +41,6 @@ func main() {
 	//	server.SwaggerServer.GetRouter().GET("/docs/swagger.yaml", handlers.SwaggerYamlHandler)
 	server.ApiServer.GetRouter().ServeFiles("/medal/{filepath:*}", "../docs/swagger/swagger.yaml")
 	server.ApiServer.GetRouter().GET("/swagger/{filename*}", handlers.SwaggerHandler)
-	//	server.ApiServer.AddHandlerToRoute("/swagger/swagger-ui.css", handlers.FilesHandler)
-	//	server.ApiServer.AddHandlerToRoute("/swagger/swagger-ui-bundle.js", handlers.FilesHandler)
-	//	server.ApiServer.AddHandlerToRoute("/swagger/swagger-ui-standalone-preset.js", handlers.FilesHandler)
 
 	if monitoring.Monitoring.WRITE_METRICS {
 		server.MetricServer.GetRouter().GET("/state", fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler()))

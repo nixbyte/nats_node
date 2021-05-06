@@ -15,17 +15,6 @@ var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 		httpSwagger.URL("/medal"),
 	))
 
-//var SwaggerYamlHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
-//	ctx.SetContentType("application/json")
-//
-//	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
-//
-//	bodyBytes, err := ioutil.ReadFile("../docs/swagger/swagger.yaml")
-//	logger.Logger.PrintError(err)
-//
-//	fmt.Fprint(ctx, string(bodyBytes))
-//}
-
 var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
