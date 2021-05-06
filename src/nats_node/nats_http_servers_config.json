@@ -12,13 +12,6 @@
 	"server_read_timeout" : 60,
 	"server_write_timeout" : 60,
 	"server_concurancy" : 65535
-},
-"swagger_server" : {
-	"server_hostname" : "localhost",
-	"server_port" : "8383",
-	"server_read_timeout" : 60,
-	"server_write_timeout" : 60,
-	"server_concurancy" : 65535
 }
 }
 

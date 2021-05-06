@@ -43,16 +43,16 @@ func (config ServerConfig) InitServer(handler func(ctx *fasthttp.RequestCtx)) *f
 
 func SetDefaultNatsNodeHttpServerConfig() *NatsNodeHttpServersConfig {
 	responseServerConfig := &ServerConfig{
-		"localhost",
-		"8080",
+		"192.168.49.94",
+		"8180",
 		60,
 		60,
 		65535,
 	}
 
 	metricServerConfig := &ServerConfig{
-		"localhost",
-		"8081",
+		"192.168.49.94",
+		"8181",
 		60,
 		60,
 		65535,
