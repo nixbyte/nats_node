@@ -6,7 +6,6 @@ import (
 	"nats_node/utils/logger"
 	"nats_node/utils/monitoring"
 	"os"
-	"strings"
 
 	"github.com/fasthttp/router"
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
@@ -18,35 +17,22 @@ var (
 	NatsHttpServersConfig *configs.NatsNodeHttpServersConfig
 	ApiServer             *httpServer
 	MetricServer          *httpServer
-	SwaggerServer         *httpServer
 )
 
 type httpServer struct {
 	HttpConfig *configs.ServerConfig
-	api        *apiStructure
+	api        *apiRouter
 	server     *fasthttp.Server
 }
 
-type apiStructure struct {
-	router  *router.Router
-	Handler func(*fasthttp.RequestCtx)
+type apiRouter struct {
+	router *router.Router
 }
 
-func newApi() *apiStructure {
-	var a *apiStructure
-	a = &apiStructure{
+func newRouter() *apiRouter {
+	var a *apiRouter
+	a = &apiRouter{
 		router: router.New(),
-		Handler: func(ctx *fasthttp.RequestCtx) {
-
-			var url string = string(ctx.Request.RequestURI())
-
-			if strings.IndexByte(string(ctx.Request.RequestURI()), '?') != -1 {
-				url = url[:strings.IndexByte(url, '?')]
-			}
-
-			handler := a.router.Handler
-			handler(ctx)
-		},
 	}
 	return a
 }
@@ -56,27 +42,20 @@ func init() {
 
 	NatsHttpServersConfig = configs.SetDefaultNatsNodeHttpServerConfig()
 
-	Api := newApi()
-	SwaggerApi := newApi()
+	Api := newRouter()
 
 	ApiServer = &httpServer{
 		NatsHttpServersConfig.HttpServerCfg,
 		Api,
-		NatsHttpServersConfig.HttpServerCfg.InitServer(Api.Handler),
-	}
-
-	SwaggerServer = &httpServer{
-		NatsHttpServersConfig.SwaggerServerCfg,
-		SwaggerApi,
-		NatsHttpServersConfig.SwaggerServerCfg.InitServer(SwaggerApi.Handler),
+		NatsHttpServersConfig.HttpServerCfg.InitServer(Api.router.Handler),
 	}
 
 	if monitoring.Monitoring.WRITE_METRICS {
-		MetricApi := newApi()
+		MetricApi := newRouter()
 		MetricServer = &httpServer{
 			NatsHttpServersConfig.MetricServerCfg,
 			MetricApi,
-			NatsHttpServersConfig.MetricServerCfg.InitServer(MetricApi.Handler),
+			NatsHttpServersConfig.MetricServerCfg.InitServer(MetricApi.router.Handler),
 		}
 	}
 }
@@ -98,8 +77,6 @@ func (httpServer *httpServer) runServer() {
 func Start() {
 
 	ApiServer.runServer()
-
-	SwaggerServer.runServer()
 
 	if monitoring.Monitoring.WRITE_METRICS {
 		MetricServer.runServer()
