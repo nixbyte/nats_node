@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"nats_node/http/client"
-	"nats_node/http/model"
+	jsonmodel "nats_node/http/model/json"
 	"nats_node/utils/logger"
 	"net/url"
 	"strconv"
@@ -29,7 +29,7 @@ func GetTotalPersonsCount() {
 			request.Rt = client.GET
 			request.Endpoint = "/api/v1/person/total/count"
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -69,7 +69,7 @@ func GetPersonsCountByName() {
 			request.Rt = client.GET
 			request.Endpoint = "/api/v1/person/count/" + values.Get("name")
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -110,7 +110,7 @@ func SearchPerson() {
 			request.Endpoint = "/api/v1/person/search/"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -137,7 +137,7 @@ func GetAllStory() {
 			request.Rt = client.GET
 			request.Endpoint = "/api/v1/mini-story/get/all"
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -176,7 +176,7 @@ func AddWidget() {
 			}
 			request.Body = bytes.NewReader(queryBytes)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -213,7 +213,7 @@ func NotificationUnsubscribe() {
 				logger.Logger.PrintError(err)
 			}
 
-			var unsubscribeRequest model.NotificationUnsubscribeRequest
+			var unsubscribeRequest jsonmodel.NotificationUnsubscribeRequest
 			if err := json.Unmarshal(queryBytes, &unsubscribeRequest); err != nil {
 				panic(err)
 			}
@@ -221,7 +221,7 @@ func NotificationUnsubscribe() {
 			request.Endpoint = "/api/v1/security/notification/" + strconv.Itoa(unsubscribeRequest.Id) + "/unsubscribe"
 			request.Parameters.Add("token", unsubscribeRequest.Token)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -260,7 +260,7 @@ func NotificationAdd() {
 			}
 			request.Body = bytes.NewReader(queryBytes)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -299,7 +299,7 @@ func PostAdd() {
 			}
 			request.Body = bytes.NewReader(queryBytes)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}

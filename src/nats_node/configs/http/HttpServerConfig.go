@@ -52,7 +52,7 @@ func SetDefaultNatsNodeHttpServerConfig() *NatsNodeHttpServersConfig {
 
 	metricServerConfig := &ServerConfig{
 		"localhost",
-		"8181",
+		"8081",
 		60,
 		60,
 		65535,

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"nats_node/http/model"
+	jsonmodel "nats_node/http/model/json"
 	"time"
 
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -10,7 +10,7 @@ import (
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
-var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
+var MedalSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 	httpSwagger.Handler(
 		httpSwagger.URL("/medal"),
 	))
@@ -18,7 +18,7 @@ var SwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	count := &model.PersonsCountResponse{}
+	count := &jsonmodel.PersonsCountResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -35,7 +35,7 @@ var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.Req
 var GetPersonsCountByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	count := &model.PersonsCountResponse{}
+	count := &jsonmodel.PersonsCountResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -52,7 +52,7 @@ var GetPersonsCountByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.Re
 var SearchPersonHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	personsList := &model.PersonsListResponse{}
+	personsList := &jsonmodel.PersonsListResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -68,7 +68,7 @@ var SearchPersonHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 var GetAllStoryHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	stories := &model.AllStoryResponse{}
+	stories := &jsonmodel.AllStoryResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -81,7 +81,7 @@ var GetAllStoryHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 var AddWidgetHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	response := &model.AddWidgetResponse{}
+	response := &jsonmodel.AddWidgetResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -94,7 +94,7 @@ var AddWidgetHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var NotificationUnsubscribeHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -107,7 +107,7 @@ var NotificationUnsubscribeHandler fasthttp.RequestHandler = func(ctx *fasthttp.
 var NotificationAddHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.NotificationAddResponse{}
+	state := &jsonmodel.NotificationAddResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -120,7 +120,7 @@ var NotificationAddHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestC
 var PostAddHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")

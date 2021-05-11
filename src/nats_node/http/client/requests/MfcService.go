@@ -65,7 +65,7 @@ func GetAppState() {
 			request.Endpoint = "/mfc/GetAppState"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -94,7 +94,7 @@ func GetBranches() {
 			request.Rt = client.GET
 			request.Endpoint = "/mfc/GetMfcList"
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -135,7 +135,7 @@ func GetBranchServices() {
 			request.Endpoint = "/mfc/GetMfcServices"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -175,7 +175,7 @@ func GetDates() {
 			request.Endpoint = "/mfc/GetDates"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -216,7 +216,7 @@ func GetTimes() {
 			request.Endpoint = "/mfc/GetTimes"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -255,7 +255,7 @@ func ReserveTime() {
 			}
 			request.Body = bytes.NewReader(queryBytes)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -293,7 +293,7 @@ func TimeConfirmation() {
 			}
 			request.Body = bytes.NewReader(queryBytes)
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
@@ -333,7 +333,7 @@ func GetReservationCode() {
 			request.Endpoint = "/mfc/GetReservationCode"
 			request.Parameters = values
 
-			response, err := client.SendRequest(request)
+			response, err := client.Client.SendRequest(request)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}

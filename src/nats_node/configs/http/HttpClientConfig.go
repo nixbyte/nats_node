@@ -21,7 +21,7 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"https://special.spbarchives.ru",
+		"https://gorod.gov.spb.ru",
 		60,
 		60,
 		65500,

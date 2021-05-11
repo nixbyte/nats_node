@@ -22,16 +22,16 @@ func main() {
 	//	server.MetricServer.AddHandlerToRoute("/metrics", fasthttpadaptor.NewFastHTTPHandler(promhttp.HandlerFor(monitoring.Registry, promhttp.HandlerOpts{})))
 	//}
 
-	go request.GetTotalPersonsCount()
-	go request.GetPersonsCountByName()
-	go request.SearchPerson()
-	go request.GetAllStory()
-	go request.AddWidget()
-	go request.NotificationUnsubscribe()
-	go request.NotificationAdd()
-	go request.PostAdd()
+	//  go request.GetTotalPersonsCount()
+	//  go request.GetPersonsCountByName()
+	//  go request.SearchPerson()
+	//  go request.GetAllStory()
+	//  go request.AddWidget()
+	//  go request.NotificationUnsubscribe()
+	//  go request.NotificationAdd()
+	//  go request.PostAdd()
 
-	//go request.GetAppState()
+	//  go request.GetAppState()
 	//	go request.GetBranches()
 	//	go request.GetBranchServices()
 	//	go request.GetDates()
@@ -39,6 +39,8 @@ func main() {
 	//	go request.ReserveTime()
 	//	go request.TimeConfirmation()
 	//	go request.GetReservationCode()
+
+	go request.GetAllMessages()
 
 	select {}
 }

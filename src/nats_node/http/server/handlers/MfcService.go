@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"nats_node/http/model"
+	jsonmodel "nats_node/http/model/json"
 	"nats_node/utils/logger"
 	"strings"
 	"time"
@@ -35,7 +35,7 @@ func init() {
 var GetAppStateHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -52,7 +52,7 @@ var GetAppStateHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 var BranchesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -65,7 +65,7 @@ var BranchesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var BranchServiceHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -82,7 +82,7 @@ var BranchServiceHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 var DatesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -99,7 +99,7 @@ var DatesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var TimesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -116,7 +116,7 @@ var TimesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var ReservationHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -129,7 +129,7 @@ var ReservationHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 var TimeConfirmationHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -142,7 +142,7 @@ var TimeConfirmationHandler fasthttp.RequestHandler = func(ctx *fasthttp.Request
 var ReservationCodeHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &model.ApiResponse{}
+	state := &jsonmodel.ApiResponse{}
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")

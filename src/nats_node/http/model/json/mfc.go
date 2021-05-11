@@ -1,11 +1,5 @@
 package model
 
-type ApiResponse struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Model   interface{} `json:"model"`
-}
-
 type AppStateResponse struct {
 	Status    string `json:"status"`
 	State     int    `json:"state"`

@@ -50,7 +50,7 @@ type HttpRequest struct {
 func init() {
 	fmt.Println("Init Client...")
 
-	Client = NewClient(configs.SetDefaultClientConfig())
+	Client = NewWorker(configs.SetDefaultClientConfig())
 
 }
 
@@ -60,13 +60,13 @@ func (t RequestType) string() string {
 	return [...]string{"GET", "POST", "PUT", "DELETE"}[t]
 }
 
-func prepareRequest(request *HttpRequest) (*http.Request, error) {
+func (worker *HttpWorker) prepareRequest(request *HttpRequest) (*http.Request, error) {
 	if strings.Compare(request.Endpoint, "") == 0 {
 		return nil, errors.New("Parameter endpoint is empty string")
 	}
 
 	if strings.Compare(request.Hostname, "") == 0 {
-		request.Hostname = Client.Config.DefaultHostName
+		request.Hostname = worker.Config.DefaultHostName
 	}
 
 	var req *http.Request
@@ -123,14 +123,14 @@ func setHeaders(req *http.Request, headers map[string]string) {
 	}
 }
 
-func sendRequest(request *HttpRequest) ([]byte, error) {
-	req, err := prepareRequest(request)
+func (worker *HttpWorker) sendRequest(request *HttpRequest) ([]byte, error) {
+	req, err := worker.prepareRequest(request)
 	if err != nil {
 		return nil, err
 	}
 	logger.Logger.PrintRequestDebug(req)
 
-	resp, err := Client.HttpClient.Do(req)
+	resp, err := worker.HttpClient.Do(req)
 	if err != nil {
 		if monitoring.Monitoring.WRITE_METRICS == true {
 			metricName := request.PrepareMetricName("ERROR")
@@ -175,8 +175,8 @@ func sendRequest(request *HttpRequest) ([]byte, error) {
 //Parameter endpoint string is a url where you send request
 //Parameter headers is a map[string]string with http headers wich you can send to server. Can be nil
 //Parameter parameters is a url.Values interface wich contains map with query parameters. Can be nil
-func SendRequest(request *HttpRequest) ([]byte, error) {
-	return sendRequest(request)
+func (worker *HttpWorker) SendRequest(request *HttpRequest) ([]byte, error) {
+	return worker.sendRequest(request)
 }
 
 func (request HttpRequest) PrepareMetricName(prefix string) string {
@@ -202,7 +202,30 @@ func NewRequest() *HttpRequest {
 	return &HttpRequest{0, "", "", make(map[string]string), url.Values{}, &bytes.Reader{}, make(map[string]interface{})}
 }
 
-func NewClient(config *configs.ClientConfig) *HttpWorker {
+func SetWorker(config *configs.ClientConfig) *HttpWorker {
+	transport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   time.Duration(config.DealerConnectTimeout) * time.Second,
+			KeepAlive: time.Duration(config.DealerKeepAlive) * time.Second,
+		}).DialContext,
+		MaxIdleConnsPerHost:   config.MaxIdleConnsPerHost,
+		MaxIdleConns:          config.MaxIdleConns,
+		TLSHandshakeTimeout:   time.Duration(config.TLSHandshakeTimeout) * time.Second,
+		ResponseHeaderTimeout: time.Duration(config.ResponseHeaderTimeout) * time.Second,
+	}
+
+	httpClient := &http.Client{
+		Timeout:   time.Duration(config.Timeout) * time.Second,
+		Transport: transport,
+	}
+	Client = &HttpWorker{
+		Config:     config,
+		HttpClient: httpClient,
+	}
+	return Client
+}
+
+func NewWorker(config *configs.ClientConfig) *HttpWorker {
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   time.Duration(config.DealerConnectTimeout) * time.Second,

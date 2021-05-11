@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"nats_node/http/model"
+	jsonmodel "nats_node/http/model/json"
 	"nats_node/utils/logger"
 	"runtime/debug"
 
@@ -40,14 +40,14 @@ func getResult(ctx *fasthttp.RequestCtx, obj interface{}) {
 
 func sendModelIfExist(ctx *fasthttp.RequestCtx, m interface{}, err error) {
 	if err != nil {
-		resp := model.ApiResponse{
+		resp := jsonmodel.ApiResponse{
 			Success: false,
 			Message: err.Error(),
 			Model:   nil,
 		}
 		getResult(ctx, resp)
 	} else {
-		resp := model.ApiResponse{
+		resp := jsonmodel.ApiResponse{
 			Success: true,
 			Message: "",
 			Model:   m,
