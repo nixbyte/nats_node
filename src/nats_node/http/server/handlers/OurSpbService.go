@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	jsonmodel "nats_node/http/model/json"
 	"time"
 
@@ -18,14 +19,17 @@ var OurSpbSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHa
 var GetAllProblemsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &jsonmodel.ApiResponse{}
+	var state string
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
 	} else {
-		err = NatsConnection.Request("GetAllProblems", ctx.Request.Body(), state, 10*time.Minute)
+		err = NatsConnection.Request("GetAllProblems", ctx.Request.Body(), &state, 10*time.Minute)
 	}
-	sendModelIfExist(ctx, state.Model, err)
+
+	fmt.Fprint(ctx, state)
+
+	//sendModelIfExist(ctx, state, err)
 }
 
 var GetProblemHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {

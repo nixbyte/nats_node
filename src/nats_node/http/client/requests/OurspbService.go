@@ -7,8 +7,8 @@ import (
 	configs "nats_node/configs/http"
 	"nats_node/http/client"
 	jsonmodel "nats_node/http/model/json"
-	soapmodel "nats_node/http/model/soap"
 	"nats_node/utils/logger"
+	"regexp"
 	"time"
 )
 
@@ -36,22 +36,7 @@ func GetAllMessages() {
 				logger.Logger.PrintError(err)
 			}
 
-			problemsEnvelope := &soapmodel.GetAllProblemsEnvelope{}
-			problemsEnvelope.Soapenv = "http://schemas.xmlsoap.org/soap/envelope/"
-			problemsEnvelope.Gorod = "https://gorod.gov.spb.ru/smev/gorod"
-			problemsEnvelope.Rev = "http://smev.gosuslugi.ru/rev120315"
-			problemsList := soapmodel.GetProblemsList{}
-			problemsList.Message = soapmodel.Message{}
-			problemsList.Message.Sender = soapmodel.Sender{
-				"",
-				"SPB010000",
-				"Система классификаторов",
-			}
-			problemsEnvelope.Body = soapmodel.GetProblemsListBody{
-				"",
-				"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd",
-				problemsList,
-			}
+			problemsEnvelopeRequest := problemsRequest.GetSoapEnvelopeRequest()
 
 			signServiceConfig := &configs.ClientConfig{
 				"http://localhost:8181",
@@ -66,13 +51,14 @@ func GetAllMessages() {
 
 			signService := client.NewWorker(signServiceConfig)
 
-			envelopeBody, err := xml.MarshalIndent(problemsEnvelope, "", " ")
+			envelopeBody, err := xml.Marshal(problemsEnvelopeRequest)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
 
 			request := client.NewRequest()
 			request.Rt = client.POST
+			request.Headers["Content-Type"] = "application/xml"
 			request.Endpoint = "/api/smev2/sign/wss"
 			request.Body = bytes.NewReader(envelopeBody)
 
@@ -81,29 +67,28 @@ func GetAllMessages() {
 				logger.Logger.PrintError(err)
 			}
 
-			problemsEnvelopeResponse := &soapmodel.GetAllProblemsEnvelopeResponse{}
+			problemsEnvelopeResponseString := string(response)
+			var tokenString = "<soapenv:Header><gorod:ApplicationToken>JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH</gorod:ApplicationToken>"
 
-			err = xml.Unmarshal([]byte(string(response)), problemsEnvelopeResponse)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
+			reg := regexp.MustCompile(`<soapenv:Header>`)
+			envelopeParts := reg.Split(problemsEnvelopeResponseString, -1)
+			envelopeWithToken := envelopeParts[0] + tokenString + envelopeParts[1]
 
-			problemsEnvelopeResponse.Header.ApplicationToken = "JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH"
+			//problemsEnvelopeResponse.Header.ApplicationToken = "JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH"
 
-			request = client.NewRequest()
-			request.Rt = client.POST
-			request.Endpoint = "/smev/openspb/"
-			request.Headers["Content-Type"] = "text/xml charset=utf-8"
-			request.Body = bytes.NewReader(response)
+			//request = client.NewRequest()
+			//request.Rt = client.POST
+			//request.Endpoint = "/smev/openspb/"
+			//request.Headers["Content-Type"] = "text/xml charset=utf-8"
+			//request.Body = bytes.NewReader(response)
 
-			apiResponse, err := client.Client.SendRequest(request)
+			//apiResponse, err := client.Client.SendRequest(request)
 
-			responseBody, err := json.Marshal(apiResponse)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-
-			err = msg.Respond(responseBody)
+			//responseBody, err := json.Marshal(apiResponse)
+			//if err != nil {
+			//	logger.Logger.PrintError(err)
+			//}
+			err = msg.Respond([]byte(envelopeWithToken))
 		}
 	}
 	defer NatsConnection.Close()
