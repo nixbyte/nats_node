@@ -68,27 +68,21 @@ func GetAllMessages() {
 			}
 
 			problemsEnvelopeResponseString := string(response)
-			var tokenString = "<soapenv:Header><gorod:ApplicationToken>JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH</gorod:ApplicationToken>"
+			var tokenString = "<soapenv:Header><gorod:ApplicationToken>JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH</gorod:ApplicationToken>" //TODO remove govnokod разобраться с маршалингом в xml
 
 			reg := regexp.MustCompile(`<soapenv:Header>`)
 			envelopeParts := reg.Split(problemsEnvelopeResponseString, -1)
 			envelopeWithToken := envelopeParts[0] + tokenString + envelopeParts[1]
 
-			//problemsEnvelopeResponse.Header.ApplicationToken = "JcYJslfFh2kQw9XbMsSFds3EQFMUy7miqXf4LSdYKFgCwdWFfUQszRxgH"
+			request = client.NewRequest()
+			request.Rt = client.POST
+			request.Endpoint = "/smev/openspb/"
+			request.Headers["Content-Type"] = "text/xml charset=utf-8"
+			request.Body = bytes.NewReader([]byte(envelopeWithToken))
 
-			//request = client.NewRequest()
-			//request.Rt = client.POST
-			//request.Endpoint = "/smev/openspb/"
-			//request.Headers["Content-Type"] = "text/xml charset=utf-8"
-			//request.Body = bytes.NewReader(response)
+			apiResponse, err := client.Client.SendRequest(request)
 
-			//apiResponse, err := client.Client.SendRequest(request)
-
-			//responseBody, err := json.Marshal(apiResponse)
-			//if err != nil {
-			//	logger.Logger.PrintError(err)
-			//}
-			err = msg.Respond([]byte(envelopeWithToken))
+			err = msg.Respond(apiResponse)
 		}
 	}
 	defer NatsConnection.Close()

@@ -6,18 +6,24 @@ import (
 )
 
 type GetAllProblemsRequest struct {
-	Page        string `json:"page"`
-	Size        string `json:"size"`
-	Query       string `json:"query"`
-	Status      string `json:"status"`
-	District    string `json:"district"`
-	Latitude    string `json:"latitude"`
-	Longitude   string `json:"longitude"`
-	CityObject  string `json:"city_object"`
-	Category    string `json:"category"`
-	Reason      string `json:"reason"`
-	UpdateAfter string `json:"update_after"`
-	SortBy      string `json:"sort_by"`
+	Page        string `json:"page,omitempty"`
+	Size        string `json:"size,omitempty"`
+	Query       string `json:"query,omitempty"`
+	Status      string `json:"status,omitempty"`
+	District    string `json:"district,omitempty"`
+	Latitude    string `json:"latitude,omitempty"`
+	Longitude   string `json:"longitude,omitempty"`
+	CityObject  string `json:"city_object,omitempty"`
+	Category    string `json:"category,omitempty"`
+	Reason      string `json:"reason,omitempty"`
+	UpdateAfter string `json:"update_after,omitempty"`
+	SortBy      string `json:"sort_by,omitempty"`
+}
+
+func setEmptyStringParameter(value *string) {
+	if value == nil {
+		*value = ""
+	}
 }
 
 func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.GetAllProblemsEnvelopeRequest {
@@ -45,10 +51,20 @@ func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.GetAllProble
 		"Наш Санкт-Петербург",
 	}
 
+	setEmptyStringParameter(&object.Status)
+
 	problemsListRequest := model.ProblemListRequest{
 		Page:         object.Page,
 		ItemsPerPage: object.Size,
 		Query:        object.Query,
+		Status:       object.Status,
+		District:     object.District,
+		Latitude:     object.Latitude,
+		Longitude:    object.Longitude,
+		CityObject:   object.CityObject,
+		Reason:       object.CityObject,
+		UpdatedAfter: object.UpdateAfter,
+		SortBy:       object.SortBy,
 	}
 
 	problemsList.MessageData = model.MessageData{}
