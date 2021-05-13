@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type SoapEnvelope interface {
+	GetSoapEnvelopeRequest() *model.EnvelopeRequest
+}
+
 type GetAllProblemsRequest struct {
 	Page        string `json:"page,omitempty"`
 	Size        string `json:"size,omitempty"`
@@ -20,14 +24,12 @@ type GetAllProblemsRequest struct {
 	SortBy      string `json:"sort_by,omitempty"`
 }
 
-func setEmptyStringParameter(value *string) {
-	if value == nil {
-		*value = ""
-	}
+type GetProblemRequest struct {
+	ProblemId string `json:"problem_id,omitempty"`
 }
 
-func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.GetAllProblemsEnvelopeRequest {
-	problemsEnvelope := &model.GetAllProblemsEnvelopeRequest{}
+func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest {
+	problemsEnvelope := &model.EnvelopeRequest{}
 	problemsEnvelope.Soapenv = "http://schemas.xmlsoap.org/soap/envelope/"
 	problemsEnvelope.Gorod = "https://gorod.gov.spb.ru/smev/gorod"
 	problemsEnvelope.Rev = "http://smev.gosuslugi.ru/rev120315"
@@ -50,8 +52,6 @@ func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.GetAllProble
 		"SPB010000",
 		"Наш Санкт-Петербург",
 	}
-
-	setEmptyStringParameter(&object.Status)
 
 	problemsListRequest := model.ProblemListRequest{
 		Page:         object.Page,
@@ -80,5 +80,50 @@ func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.GetAllProble
 	}
 
 	return problemsEnvelope
+
+}
+
+func (object GetProblemRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest {
+	problemEnvelope := &model.EnvelopeRequest{}
+	problemEnvelope.Soapenv = "http://schemas.xmlsoap.org/soap/envelope/"
+	problemEnvelope.Gorod = "https://gorod.gov.spb.ru/smev/gorod"
+	problemEnvelope.Rev = "http://smev.gosuslugi.ru/rev120315"
+	problemRequest := model.MessageBody{}
+
+	problemRequest.Message.TypeCode = "GSRV"
+	problemRequest.Message.Status = "REQUEST"
+	problemRequest.Message.TestMsg = "FALSE"
+	problemRequest.Message.ExchangeType = "2"
+	currentTime := time.Now()
+	problemRequest.Message.Date = currentTime.Format("2006-01-02T15:04:05Z")
+
+	problemRequest.Message.Sender = model.Sender{
+		"",
+		"SPB010000",
+		"Система классификаторов",
+	}
+	problemRequest.Message.Recipient = model.Recipient{
+		"",
+		"SPB010000",
+		"Наш Санкт-Петербург",
+	}
+
+	problem := model.ProblemDetailRequest{
+		Id: object.ProblemId,
+	}
+
+	problemRequest.MessageData = model.MessageData{}
+	problemRequest.MessageData.AppData = model.ProblemDetailAppData{
+		"",
+		problem,
+	}
+
+	problemEnvelope.Body = model.GetProblemBody{
+		"",
+		"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd",
+		problemRequest,
+	}
+
+	return problemEnvelope
 
 }

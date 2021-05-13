@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/xml"
 	"errors"
-	jsonmodel "nats_node/http/model/json"
 	soapmodel "nats_node/http/model/soap"
 	"nats_node/utils/logger"
 	"time"
@@ -22,12 +21,12 @@ var GetAllProblemsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCt
 	defer CatchPanic(ctx)
 
 	var state string
-	var envelope soapmodel.EnvelopeResponse
+	var envelope soapmodel.GetAllProblemsEnvelopeResponse
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
 	} else {
-		err = NatsConnection.Request("GetAllProblems", ctx.Request.Body(), &state, 10*time.Minute)
+		err = NatsConnection.Request("GetAllProblems", ctx.Request.Body(), &state, 1*time.Minute)
 	}
 
 	ctx.Response.Header.Set("Content-Type", "text/xml; charset=utf-8")
@@ -47,7 +46,8 @@ var GetAllProblemsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCt
 var GetProblemHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	state := &jsonmodel.ApiResponse{}
+	var state string
+	var envelope soapmodel.GetProblemEnvelopeResponse
 
 	if ctx.IsPost() == true {
 		err = errors.New("method POST not supported")
@@ -55,8 +55,21 @@ var GetProblemHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 		exist, err = validateParameters(ctx, []string{"problemId"})
 
 		if exist {
-			err = NatsConnection.Request("GetProblem", ctx.QueryArgs().QueryString(), state, 10*time.Minute)
+			err = NatsConnection.Request("GetProblem", ctx.QueryArgs().QueryString(), &state, 1*time.Minute)
+
+			ctx.Response.Header.Set("Content-Type", "text/xml; charset=utf-8")
+
+			err = xml.Unmarshal([]byte(state), &envelope)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			//fmt.Fprint(ctx, state)
+			if envelope.Body.Fault.Faultstring != "" {
+				sendModelIfExist(ctx, envelope.Body.Fault, errors.New("Fault Code: "+envelope.Body.Fault.Faultcode+" Fault String: "+envelope.Body.Fault.Faultstring))
+			} else {
+				sendModelIfExist(ctx, envelope.Body.GetProblemResponse.MessageData.AppData.GetProblemResult, err)
+			}
 		}
 	}
-	sendModelIfExist(ctx, state.Model, err)
 }

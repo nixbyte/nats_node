@@ -40,7 +40,8 @@ func main() {
 	//	go request.TimeConfirmation()
 	//	go request.GetReservationCode()
 
-	go request.GetAllMessages()
+	go request.GetAllProblems()
+	go request.GetProblem()
 
 	select {}
 }
