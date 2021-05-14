@@ -42,6 +42,7 @@ func main() {
 
 	go request.GetAllProblems()
 	go request.GetProblem()
+	go request.GetFile()
 
 	select {}
 }

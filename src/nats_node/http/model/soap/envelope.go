@@ -55,6 +55,23 @@ type ProblemDetailRequest struct {
 	Id   string `xml:"id"`
 }
 
+type GetFileBody struct {
+	Text        string      `xml:",chardata"`
+	Ns0         string      `xml:"xmlns:ns0,attr"`
+	MessageBody MessageBody `xml:"gorod:GetFile"`
+}
+
+type GetFileRequest struct {
+	XMLName xml.Name `xml:"gorod:FileRequest"`
+	Text    string   `xml:",chardata"`
+	URL     string   `xml:"url"`
+}
+
+type FileAppData struct {
+	Text           string         `xml:",chardata"`
+	GetFileRequest GetFileRequest `xml:"gorod:FileRequest"`
+}
+
 type GetAllProblemsEnvelopeResponse struct {
 	XMLName   xml.Name `xml:"Envelope"`
 	Text      string   `xml:",chardata"`
@@ -390,6 +407,126 @@ type GetProblemEnvelopeResponse struct {
 				} `xml:"AppData"`
 			} `xml:"MessageData"`
 		} `xml:"GetProblemResponse"`
+		Fault struct {
+			XMLName     xml.Name `xml:"Fault"`
+			Text        string   `xml:",chardata"`
+			Faultcode   string   `xml:"faultcode"`
+			Faultstring string   `xml:"faultstring"`
+			Faultactor  string   `xml:"faultactor"`
+		} `xml:"Fault"`
+	} `xml:"Body"`
+}
+
+type GetFileEnvelopeResponse struct {
+	XMLName   xml.Name `xml:"Envelope"`
+	Text      string   `xml:",chardata"`
+	Soap11env string   `xml:"soap11env,attr"`
+	Tns       string   `xml:"tns,attr"`
+	Header    struct {
+		Text     string `xml:",chardata"`
+		Security struct {
+			Text                string `xml:",chardata"`
+			Wsse                string `xml:"wsse,attr"`
+			Actor               string `xml:"actor,attr"`
+			BinarySecurityToken struct {
+				Text         string `xml:",chardata"`
+				Ns0          string `xml:"ns0,attr"`
+				EncodingType string `xml:"EncodingType,attr"`
+				ValueType    string `xml:"ValueType,attr"`
+				ID           string `xml:"Id,attr"`
+			} `xml:"BinarySecurityToken"`
+			Signature struct {
+				Text       string `xml:",chardata"`
+				Ds         string `xml:"ds,attr"`
+				SignedInfo struct {
+					Text                   string `xml:",chardata"`
+					CanonicalizationMethod struct {
+						Text      string `xml:",chardata"`
+						Algorithm string `xml:"Algorithm,attr"`
+					} `xml:"CanonicalizationMethod"`
+					SignatureMethod struct {
+						Text      string `xml:",chardata"`
+						Algorithm string `xml:"Algorithm,attr"`
+					} `xml:"SignatureMethod"`
+					Reference struct {
+						Text       string `xml:",chardata"`
+						URI        string `xml:"URI,attr"`
+						Transforms struct {
+							Text      string `xml:",chardata"`
+							Transform struct {
+								Text      string `xml:",chardata"`
+								Algorithm string `xml:"Algorithm,attr"`
+							} `xml:"Transform"`
+						} `xml:"Transforms"`
+						DigestMethod struct {
+							Text      string `xml:",chardata"`
+							Algorithm string `xml:"Algorithm,attr"`
+						} `xml:"DigestMethod"`
+						DigestValue string `xml:"DigestValue"`
+					} `xml:"Reference"`
+				} `xml:"SignedInfo"`
+				SignatureValue string `xml:"SignatureValue"`
+				KeyInfo        struct {
+					Text                   string `xml:",chardata"`
+					SecurityTokenReference struct {
+						Text      string `xml:",chardata"`
+						Reference struct {
+							Text      string `xml:",chardata"`
+							URI       string `xml:"URI,attr"`
+							ValueType string `xml:"ValueType,attr"`
+						} `xml:"Reference"`
+					} `xml:"SecurityTokenReference"`
+				} `xml:"KeyInfo"`
+			} `xml:"Signature"`
+		} `xml:"Security"`
+	} `xml:"Header"`
+	Body struct {
+		Text            string `xml:",chardata"`
+		Ns0             string `xml:"ns0,attr"`
+		ID              string `xml:"Id,attr"`
+		GetFileResponse struct {
+			Text    string `xml:",chardata"`
+			Message struct {
+				Text   string `xml:",chardata"`
+				Smev   string `xml:"smev,attr"`
+				Sender struct {
+					Text string `xml:",chardata"`
+					Code string `xml:"Code"`
+					Name string `xml:"Name"`
+				} `xml:"Sender"`
+				Recipient struct {
+					Text string `xml:",chardata"`
+					Code string `xml:"Code"`
+					Name string `xml:"Name"`
+				} `xml:"Recipient"`
+				Service struct {
+					Text     string `xml:",chardata"`
+					Mnemonic string `xml:"Mnemonic"`
+					Version  string `xml:"Version"`
+				} `xml:"Service"`
+				TypeCode     string `xml:"TypeCode"`
+				Status       string `xml:"Status"`
+				Date         string `xml:"Date"`
+				ExchangeType string `xml:"ExchangeType"`
+				TestMsg      string `xml:"TestMsg"`
+			} `xml:"Message"`
+			MessageData struct {
+				Text    string `xml:",chardata"`
+				Smev    string `xml:"smev,attr"`
+				AppData struct {
+					Text          string `xml:",chardata"`
+					GetFileResult struct {
+						Text string `xml:",chardata"`
+						File string `xml:"file"`
+					} `xml:"GetFileResult"`
+					Error struct {
+						Text         string `xml:",chardata"`
+						ErrorCode    string `xml:"errorCode"`
+						ErrorMessage string `xml:"errorMessage"`
+					} `xml:"Error"`
+				} `xml:"AppData"`
+			} `xml:"MessageData"`
+		} `xml:"GetFileResponse"`
 		Fault struct {
 			XMLName     xml.Name `xml:"Fault"`
 			Text        string   `xml:",chardata"`

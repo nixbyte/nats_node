@@ -28,6 +28,10 @@ type GetProblemRequest struct {
 	ProblemId string `json:"problem_id,omitempty"`
 }
 
+type GetFileRequest struct {
+	Filename string `json:"filename,omitempty"`
+}
+
 func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest {
 	problemsEnvelope := &model.EnvelopeRequest{}
 	problemsEnvelope.Soapenv = "http://schemas.xmlsoap.org/soap/envelope/"
@@ -126,4 +130,61 @@ func (object GetProblemRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest 
 
 	return problemEnvelope
 
+}
+
+func (object GetFileRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest {
+	Envelope := createEnvelope()
+	MessageBody := createMessageBody()
+
+	filename := model.GetFileRequest{
+		URL: object.Filename,
+	}
+
+	MessageBody.MessageData.AppData = model.FileAppData{
+		"",
+		filename,
+	}
+
+	Envelope.Body = model.GetFileBody{
+		"",
+		"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd",
+		*MessageBody,
+	}
+
+	return Envelope
+
+}
+
+func createEnvelope() *model.EnvelopeRequest {
+	problemEnvelope := &model.EnvelopeRequest{}
+	problemEnvelope.Soapenv = "http://schemas.xmlsoap.org/soap/envelope/"
+	problemEnvelope.Gorod = "https://gorod.gov.spb.ru/smev/gorod"
+	problemEnvelope.Rev = "http://smev.gosuslugi.ru/rev120315"
+	return problemEnvelope
+}
+
+func createMessageBody() *model.MessageBody {
+
+	MessageBody := &model.MessageBody{}
+
+	MessageBody.Message.TypeCode = "GSRV"
+	MessageBody.Message.Status = "REQUEST"
+	MessageBody.Message.TestMsg = "FALSE"
+	MessageBody.Message.ExchangeType = "2"
+	currentTime := time.Now()
+	MessageBody.Message.Date = currentTime.Format("2006-01-02T15:04:05Z")
+
+	MessageBody.Message.Sender = model.Sender{
+		"",
+		"SPB010000",
+		"Система классификаторов",
+	}
+	MessageBody.Message.Recipient = model.Recipient{
+		"",
+		"SPB010000",
+		"Наш Санкт-Петербург",
+	}
+
+	MessageBody.MessageData = model.MessageData{}
+	return MessageBody
 }
