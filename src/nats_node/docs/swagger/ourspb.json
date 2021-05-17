@@ -17,9 +17,63 @@
   "host": "localhost:8080",
   "basePath": "/ourspb",
   "paths": {
+    "/GetAllProblems": {
+      "post": {
+        "description": "GetAllProblems возвращает список проблем удовлетворяющих параметрам фильтрации",
+        "tags": [
+          "AllProblems"
+        ],
+        "operationId": "idOfGetAllProblemsEndpoint",
+        "parameters": [
+          {
+            "uniqueItems": true,
+            "example": "\"3429642\"",
+            "description": "параметры фильтрации",
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetAllProblemsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ApiResponseAllProblems"
+          }
+        }
+      }
+    },
+    "/GetFile": {
+      "post": {
+        "description": "GetFile возвращает возвращает содержимое файла в кодировке base64",
+        "tags": [
+          "File"
+        ],
+        "operationId": "idOfGetFileEndpoint",
+        "parameters": [
+          {
+            "uniqueItems": true,
+            "example": "\"/storage/1/61e8bf31-4ca6-4a05-bcbc-d95ce038d3bd.jpg\"",
+            "description": "имя файла",
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetFileRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ApiResponseFile"
+          }
+        }
+      }
+    },
     "/GetProblem": {
       "get": {
-        "description": "GetProblem Принимает на вход номер проблемы и возвращает детальную информацию о проблеме",
+        "description": "GetProblem принимает на вход номер проблемы и возвращает детальную информацию о проблеме",
         "tags": [
           "Problem"
         ],
@@ -47,6 +101,40 @@
     }
   },
   "definitions": {
+    "ApiResponseAllProblems": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        },
+        "model": {
+          "$ref": "#/definitions/GetAllProblemsResponse"
+        },
+        "success": {
+          "type": "boolean",
+          "x-go-name": "Success"
+        }
+      },
+      "x-go-package": "nats_node/docs/ourspb"
+    },
+    "ApiResponseFile": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        },
+        "model": {
+          "$ref": "#/definitions/GetFileResponse"
+        },
+        "success": {
+          "type": "boolean",
+          "x-go-name": "Success"
+        }
+      },
+      "x-go-package": "nats_node/docs/ourspb"
+    },
     "ApiResponseProblem": {
       "type": "object",
       "properties": {
@@ -63,6 +151,141 @@
         }
       },
       "x-go-package": "nats_node/docs/ourspb"
+    },
+    "GetAllProblemsRequest": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "x-go-name": "Category"
+        },
+        "city_object": {
+          "type": "string",
+          "x-go-name": "CityObject"
+        },
+        "district": {
+          "type": "string",
+          "x-go-name": "District"
+        },
+        "latitude": {
+          "type": "string",
+          "x-go-name": "Latitude"
+        },
+        "longitude": {
+          "type": "string",
+          "x-go-name": "Longitude"
+        },
+        "page": {
+          "type": "string",
+          "x-go-name": "Page"
+        },
+        "query": {
+          "type": "string",
+          "x-go-name": "Query"
+        },
+        "reason": {
+          "type": "string",
+          "x-go-name": "Reason"
+        },
+        "size": {
+          "type": "string",
+          "x-go-name": "Size"
+        },
+        "sort_by": {
+          "type": "string",
+          "x-go-name": "SortBy"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "update_after": {
+          "type": "string",
+          "x-go-name": "UpdateAfter"
+        }
+      },
+      "x-go-package": "nats_node/http/model/json"
+    },
+    "GetAllProblemsResponse": {
+      "type": "object",
+      "properties": {
+        "Count": {
+          "type": "string"
+        },
+        "CurrentPage": {
+          "type": "string",
+          "x-go-name": "Currentpage"
+        },
+        "IsLastPage": {
+          "type": "string",
+          "x-go-name": "Islastpage"
+        },
+        "Results": {
+          "type": "object",
+          "properties": {
+            "Problem": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "FullAddress": {
+                    "type": "string",
+                    "x-go-name": "Fulladdress"
+                  },
+                  "ID": {
+                    "type": "string"
+                  },
+                  "Image": {
+                    "type": "string"
+                  },
+                  "Reason": {
+                    "type": "string"
+                  },
+                  "Status": {
+                    "type": "string"
+                  },
+                  "Text": {
+                    "type": "string"
+                  },
+                  "UpdateTime": {
+                    "type": "string",
+                    "x-go-name": "Updatetime"
+                  }
+                }
+              }
+            },
+            "Text": {
+              "type": "string"
+            }
+          }
+        },
+        "Text": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "nats_node/http/model/json"
+    },
+    "GetFileRequest": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "x-go-name": "Filename"
+        }
+      },
+      "x-go-package": "nats_node/http/model/json"
+    },
+    "GetFileResponse": {
+      "type": "object",
+      "properties": {
+        "File": {
+          "type": "string"
+        },
+        "Text": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "nats_node/http/model/json"
     },
     "GetProblemResponse": {
       "type": "object",
@@ -355,8 +578,20 @@
     }
   },
   "responses": {
+    "ApiResponseAllProblems": {
+      "description": "Модель данных списка проблем",
+      "schema": {
+        "$ref": "#/definitions/ApiResponseAllProblems"
+      }
+    },
+    "ApiResponseFile": {
+      "description": "Модель данных файла",
+      "schema": {
+        "$ref": "#/definitions/ApiResponseFile"
+      }
+    },
     "ApiResponseProblem": {
-      "description": "Модель данных детальную информацию о проблеме",
+      "description": "Модель данных детальной информации о проблеме",
       "schema": {
         "$ref": "#/definitions/ApiResponseProblem"
       }

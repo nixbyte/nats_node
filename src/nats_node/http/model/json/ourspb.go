@@ -24,6 +24,25 @@ type GetAllProblemsRequest struct {
 	SortBy      string `json:"sort_by,omitempty"`
 }
 
+type GetAllProblemsResponse struct {
+	Text        string `json:"Text"`
+	Count       string `json:"Count"`
+	Currentpage string `json:"CurrentPage"`
+	Islastpage  string `json:"IsLastPage"`
+	Results     struct {
+		Text    string `json:"Text"`
+		Problem []struct {
+			Text        string `json:"Text"`
+			ID          string `json:"ID"`
+			Reason      string `json:"Reason"`
+			Status      string `json:"Status"`
+			Updatetime  string `json:"UpdateTime"`
+			Image       string `json:"Image"`
+			Fulladdress string `json:"FullAddress"`
+		} `json:"Problem"`
+	} `json:"Results"`
+}
+
 type GetProblemRequest struct {
 	ProblemId string `json:"problem_id,omitempty"`
 }
@@ -120,6 +139,11 @@ type GetProblemResponse struct {
 
 type GetFileRequest struct {
 	Filename string `json:"filename,omitempty"`
+}
+
+type GetFileResponse struct {
+	Text string `json:"Text"`
+	File string `json:"File"`
 }
 
 func NewProblemListRequest(object GetAllProblemsRequest) interface{} {

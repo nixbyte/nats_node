@@ -2,10 +2,10 @@
 //
 // API для сервиса - Медаль «За оборону Ленинграда»
 //
-//     Schemes: https
+//     Schemes: http
 //     BasePath: /medal
 //     Version: 1.0.0
-//     Host: medalapi.spb.dev
+//     Host: localhost:8080
 //
 //     Consumes:
 //     - application/json
