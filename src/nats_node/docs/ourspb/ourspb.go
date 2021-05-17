@@ -45,7 +45,7 @@ type ApiResponseFile struct {
 	Model   model.GetFileResponse `json:"model"`
 }
 
-// swagger:route POST /GetAllProblems AllProblems idOfGetAllProblemsEndpoint
+// swagger:route POST /GetAllProblems Problem idOfGetAllProblemsEndpoint
 // GetAllProblems возвращает список проблем удовлетворяющих параметрам фильтрации
 // responses:
 //   200: ApiResponseAllProblems
@@ -93,7 +93,7 @@ type GetProblemResponseWrapper struct {
 	Body ApiResponseProblem
 }
 
-// swagger:route POST /GetFile File idOfGetFileEndpoint
+// swagger:route POST /GetFile Problem idOfGetFileEndpoint
 // GetFile возвращает возвращает содержимое файла в кодировке base64
 // responses:
 //   200: ApiResponseFile

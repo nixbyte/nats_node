@@ -6,7 +6,7 @@
     "application/json"
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
@@ -14,7 +14,7 @@
     "title": "Medal Service.",
     "version": "1.0.0"
   },
-  "host": "medalapi.spb.dev",
+  "host": "localhost:8080",
   "basePath": "/medal",
   "paths": {
     "/GetAllStory": {

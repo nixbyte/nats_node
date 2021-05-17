@@ -21,7 +21,7 @@
       "post": {
         "description": "GetAllProblems возвращает список проблем удовлетворяющих параметрам фильтрации",
         "tags": [
-          "AllProblems"
+          "Problem"
         ],
         "operationId": "idOfGetAllProblemsEndpoint",
         "parameters": [
@@ -48,7 +48,7 @@
       "post": {
         "description": "GetFile возвращает возвращает содержимое файла в кодировке base64",
         "tags": [
-          "File"
+          "Problem"
         ],
         "operationId": "idOfGetFileEndpoint",
         "parameters": [
