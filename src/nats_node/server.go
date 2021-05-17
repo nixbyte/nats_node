@@ -22,6 +22,8 @@ func main() {
 
 	server.Start()
 
+	server.ApiServer.GetRouter().ServeFiles("/{filepath:*}", "./docs/swagger/")
+
 	//	server.Api.AddHandlerToRoute("/mfc/GetAppState", handlers.GetAppStateHandler)
 	//	server.Api.AddHandlerToRoute("/mfc/GetMfcList", handlers.BranchesHandler)
 	//	server.Api.AddHandlerToRoute("/mfc/GetMfcServices", handlers.BranchServiceHandler)
@@ -38,8 +40,8 @@ func main() {
 	//  server.Api.AddHandlerToRoute("/medal/notification/unsubscribe", handlers.NotificationUnsubscribeHandler)
 	//  server.Api.AddHandlerToRoute("/medal/notification/add", handlers.NotificationAddHandler)
 	//  server.Api.AddHandlerToRoute("/medal/post/add", handlers.PostAddHandler)
-	//	server.SwaggerServer.GetRouter().GET("/docs/swagger.yaml", handlers.SwaggerYamlHandler)
-	server.ApiServer.GetRouter().ServeFiles("/ourspb/{filepath:*}", "./docs/swagger/swagger.yaml")
+	//  server.ApiServer.GetRouter().GET("/medal/swagger/{filename*}", handlers.MedalSwaggerHandler)
+
 	server.ApiServer.GetRouter().GET("/ourspb/swagger/{filename*}", handlers.OurSpbSwaggerHandler)
 	server.ApiServer.GetRouter().POST("/ourspb/GetAllProblems", handlers.GetAllProblemsHandler)
 	server.ApiServer.GetRouter().GET("/ourspb/GetProblem", handlers.GetProblemHandler)

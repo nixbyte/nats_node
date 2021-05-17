@@ -19,7 +19,7 @@ definitions:
           x-go-name: Story
       type: object
     type: array
-    x-go-package: nats_node/http/model
+    x-go-package: nats_node/http/model/json
   ApiResponsePersonCount:
     properties:
       message:
@@ -63,7 +63,7 @@ definitions:
         type: integer
         x-go-name: Count
     type: object
-    x-go-package: nats_node/http/model
+    x-go-package: nats_node/http/model/json
   PersonsListResponse:
     properties:
       content:
@@ -207,7 +207,7 @@ definitions:
         type: integer
         x-go-name: Total
     type: object
-    x-go-package: nats_node/http/model
+    x-go-package: nats_node/http/model/json
 host: medalapi.spb.dev
 info:
   description: API для сервиса - Медаль «За оборону Ленинграда»

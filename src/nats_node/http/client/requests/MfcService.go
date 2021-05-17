@@ -21,9 +21,9 @@ var exist bool
 
 func init() {
 
-	servers = []string{"nats://192.168.49.91:4111", "nats://192.168.49.92:4222", "nats://127.0.0.1:4111"}
+	servers = []string{"nats://192.168.49.91:4111", "nats://192.168.49.92:4222", "nats://127.0.0.1:4111", "nats://127.0.0.1:4222", "nats://127.0.0.1:4333"}
 
-	Nc, err = nats.Connect(strings.Join(servers, ","), nats.NoEcho())
+	Nc, err = nats.Connect(strings.Join(servers, ","))
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}

@@ -1,0 +1,370 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API для сервиса - Получения данных через СМЭВ из системы НашСПб",
+    "title": "Ourspb Service.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/ourspb",
+  "paths": {
+    "/GetProblem": {
+      "get": {
+        "description": "GetProblem Принимает на вход номер проблемы и возвращает детальную информацию о проблеме",
+        "tags": [
+          "Problem"
+        ],
+        "operationId": "idOfGetProblemEndpoint",
+        "parameters": [
+          {
+            "maxItems": 14,
+            "minItems": 5,
+            "uniqueItems": true,
+            "type": "string",
+            "example": "\"3429642\"",
+            "x-go-name": "ProblemId",
+            "description": "идентификтаор проблемы",
+            "name": "problemId",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ApiResponseProblem"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ApiResponseProblem": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        },
+        "model": {
+          "$ref": "#/definitions/GetProblemResponse"
+        },
+        "success": {
+          "type": "boolean",
+          "x-go-name": "Success"
+        }
+      },
+      "x-go-package": "nats_node/docs/ourspb"
+    },
+    "GetProblemResponse": {
+      "type": "object",
+      "properties": {
+        "CategoryName": {
+          "type": "string",
+          "x-go-name": "Categoryname"
+        },
+        "CityObjectName": {
+          "type": "string",
+          "x-go-name": "Cityobjectname"
+        },
+        "Controller": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            },
+            "OrganizationInn": {
+              "type": "string",
+              "x-go-name": "Organizationinn"
+            },
+            "OrganizationOgrn": {
+              "type": "string",
+              "x-go-name": "Organizationogrn"
+            },
+            "PersonEmail": {
+              "type": "string",
+              "x-go-name": "Personemail"
+            },
+            "PersonName": {
+              "type": "string",
+              "x-go-name": "Personname"
+            },
+            "PersonPhone": {
+              "type": "string",
+              "x-go-name": "Personphone"
+            },
+            "PersonPosition": {
+              "type": "string",
+              "x-go-name": "Personposition"
+            },
+            "Text": {
+              "type": "string"
+            }
+          }
+        },
+        "Coordinator": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            },
+            "OrganizationInn": {
+              "type": "string",
+              "x-go-name": "Organizationinn"
+            },
+            "OrganizationOgrn": {
+              "type": "string",
+              "x-go-name": "Organizationogrn"
+            },
+            "PersonEmail": {
+              "type": "string",
+              "x-go-name": "Personemail"
+            },
+            "PersonName": {
+              "type": "string",
+              "x-go-name": "Personname"
+            },
+            "PersonPhone": {
+              "type": "string",
+              "x-go-name": "Personphone"
+            },
+            "PersonPosition": {
+              "type": "string",
+              "x-go-name": "Personposition"
+            },
+            "Text": {
+              "type": "string"
+            }
+          }
+        },
+        "DistrictID": {
+          "type": "string",
+          "x-go-name": "Districtid"
+        },
+        "EarlierOrganization": {
+          "type": "string",
+          "x-go-name": "Earlierorganization"
+        },
+        "ExpectedAnswerDt": {
+          "type": "string",
+          "x-go-name": "Expectedanswerdt"
+        },
+        "Feed": {
+          "type": "object",
+          "properties": {
+            "Text": {
+              "type": "string"
+            },
+            "Widget": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "Answer": {
+                    "type": "object",
+                    "properties": {
+                      "Author": {
+                        "type": "object",
+                        "properties": {
+                          "Name": {
+                            "type": "string"
+                          },
+                          "OrganizationInn": {
+                            "type": "string",
+                            "x-go-name": "Organizationinn"
+                          },
+                          "OrganizationOgrn": {
+                            "type": "string",
+                            "x-go-name": "Organizationogrn"
+                          },
+                          "PersonEmail": {
+                            "type": "string",
+                            "x-go-name": "Personemail"
+                          },
+                          "PersonName": {
+                            "type": "string",
+                            "x-go-name": "Personname"
+                          },
+                          "PersonPhone": {
+                            "type": "string",
+                            "x-go-name": "Personphone"
+                          },
+                          "PersonPosition": {
+                            "type": "string",
+                            "x-go-name": "Personposition"
+                          },
+                          "Text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "AuthorName": {
+                        "type": "string",
+                        "x-go-name": "Authorname"
+                      },
+                      "Body": {
+                        "type": "string"
+                      },
+                      "Dt": {
+                        "type": "string"
+                      },
+                      "Files": {
+                        "type": "object",
+                        "properties": {
+                          "File": {
+                            "type": "object",
+                            "properties": {
+                              "ID": {
+                                "type": "string"
+                              },
+                              "OriginalName": {
+                                "type": "string",
+                                "x-go-name": "Originalname"
+                              },
+                              "Text": {
+                                "type": "string"
+                              },
+                              "URL": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "Text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "InterimDate": {
+                        "type": "string",
+                        "x-go-name": "Interimdate"
+                      },
+                      "Performer": {
+                        "type": "string"
+                      },
+                      "Photos": {
+                        "type": "object",
+                        "properties": {
+                          "Photo": {
+                            "type": "object"
+                          },
+                          "Text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "Text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Petition": {
+                    "type": "object",
+                    "properties": {
+                      "AuthorName": {
+                        "type": "string",
+                        "x-go-name": "Authorname"
+                      },
+                      "Body": {
+                        "type": "string"
+                      },
+                      "Dt": {
+                        "type": "string"
+                      },
+                      "Files": {
+                        "type": "string"
+                      },
+                      "Photos": {
+                        "type": "object",
+                        "properties": {
+                          "Photo": {
+                            "type": "object"
+                          },
+                          "Text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "Text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Status": {
+                    "type": "object",
+                    "properties": {
+                      "CloseReason": {
+                        "type": "string",
+                        "x-go-name": "Closereason"
+                      },
+                      "Dt": {
+                        "type": "string"
+                      },
+                      "Status": {
+                        "type": "string"
+                      },
+                      "Text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "FullAddress": {
+          "type": "string",
+          "x-go-name": "Fulladdress"
+        },
+        "ID": {
+          "type": "string"
+        },
+        "Latitude": {
+          "type": "string"
+        },
+        "Longitude": {
+          "type": "string"
+        },
+        "Reason": {
+          "type": "string"
+        },
+        "ReasonName": {
+          "type": "string",
+          "x-go-name": "Reasonname"
+        },
+        "Text": {
+          "type": "string"
+        },
+        "UpdateTime": {
+          "type": "string",
+          "x-go-name": "Updatetime"
+        }
+      },
+      "x-go-package": "nats_node/http/model/json"
+    }
+  },
+  "responses": {
+    "ApiResponseProblem": {
+      "description": "Модель данных детальную информацию о проблеме",
+      "schema": {
+        "$ref": "#/definitions/ApiResponseProblem"
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
+    }
+  }
+}

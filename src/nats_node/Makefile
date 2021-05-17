@@ -1,5 +1,7 @@
 CGO_ENABLED=0
 GOPATH=${CURDIR}/../..:${CURDIR}
+
+filename=swagger
 	
 
 build: build_server build_client
@@ -35,13 +37,13 @@ check:
 	go mod verify
 
 check_swagger:
-	which swagger || (go get github.com/go-swagger/go-swagger/cmd/swagger)
+	which swagger || (go get -u  github.com/go-swagger/go-swagger/cmd/swagger)
 
 swagger: check_swagger
-	swagger generate spec -o ./docs/swagger/swagger.yaml --scan-models
+	swagger generate spec -o ./docs/swagger/$(FILENAME).json -c $(FILENAME) --scan-models
 
 run_swagger: check_swagger
-	swagger serve -F=swagger ./docs/swagger/swagger.yaml
+	swagger serve -F=swagger ./docs/swagger/$(FILENAME).json
 
-f:
+
 	gofmt -l -s -w `find . -type f -name '*.go' -not -path "./vendor/*"`

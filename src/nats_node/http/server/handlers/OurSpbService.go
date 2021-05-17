@@ -14,7 +14,7 @@ import (
 
 var OurSpbSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 	httpSwagger.Handler(
-		httpSwagger.URL("/ourspb"),
+		httpSwagger.URL("/ourspb.json"),
 	))
 
 var GetAllProblemsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {

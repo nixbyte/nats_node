@@ -1,6 +1,8 @@
 package model
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 type EnvelopeRequest struct {
 	XMLName xml.Name    `xml:"soapenv:Envelope"`
@@ -19,16 +21,15 @@ type GetProblemsListBody struct {
 }
 
 type ProblemListAppData struct {
-	Text               string             `xml:",chardata"`
-	ProblemListRequest ProblemListRequest `xml:"gorod:ProblemListRequest"`
+	Text               string      `xml:",chardata"`
+	ProblemListRequest interface{} `xml:"gorod:ProblemListRequest"`
 }
 
-type ProblemListRequest struct {
+type ProblemListRequestWithoutStatus struct {
 	Text         string `xml:",chardata"`
 	Page         string `xml:"page"`
 	ItemsPerPage string `xml:"items_per_page"`
 	Query        string `xml:"query"`
-	Status       string `xml:"status"`
 	District     string `xml:"district"`
 	Latitude     string `xml:"latitude"`
 	Longitude    string `xml:"longitude"`
@@ -37,6 +38,22 @@ type ProblemListRequest struct {
 	Reason       string `xml:"reason"`
 	UpdatedAfter string `xml:"updated_after"`
 	SortBy       string `xml:"sort_by"`
+}
+
+type ProblemListRequest struct {
+	Text         string      `xml:",chardata"`
+	Page         string      `xml:"page"`
+	ItemsPerPage string      `xml:"items_per_page"`
+	Query        string      `xml:"query"`
+	Status       interface{} `xml:"status"`
+	District     string      `xml:"district"`
+	Latitude     string      `xml:"latitude"`
+	Longitude    string      `xml:"longitude"`
+	CityObject   string      `xml:"city_object"`
+	Category     string      `xml:"category"`
+	Reason       string      `xml:"reason"`
+	UpdatedAfter string      `xml:"updated_after"`
+	SortBy       string      `xml:"sort_by"`
 }
 
 type GetProblemBody struct {

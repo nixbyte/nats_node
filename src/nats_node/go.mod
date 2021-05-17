@@ -18,7 +18,7 @@ require (
 	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab
 	github.com/nats-io/nats.go v1.10.0
 	github.com/nats-io/nkeys v0.3.0 // indirect
-	github.com/pelletier/go-toml v1.9.0 // indirect
+	github.com/pelletier/go-toml v1.9.1 // indirect
 	github.com/prometheus/client_golang v1.7.1
 	github.com/prometheus/common v0.21.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
@@ -28,8 +28,8 @@ require (
 	go.mongodb.org/mongo-driver v1.5.2 // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210505214959-0714010a04ed // indirect
-	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6 // indirect
-	golang.org/x/tools v0.1.0 // indirect
+	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
+	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
+	golang.org/x/tools v0.1.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

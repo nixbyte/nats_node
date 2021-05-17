@@ -28,8 +28,130 @@ type GetProblemRequest struct {
 	ProblemId string `json:"problem_id,omitempty"`
 }
 
+type GetProblemResponse struct {
+	Text                string `json:"Text"`
+	ID                  string `json:"ID"`
+	Cityobjectname      string `json:"CityObjectName"`
+	Categoryname        string `json:"CategoryName"`
+	Reasonname          string `json:"ReasonName"`
+	Reason              string `json:"Reason"`
+	Fulladdress         string `json:"FullAddress"`
+	Latitude            string `json:"Latitude"`
+	Longitude           string `json:"Longitude"`
+	Districtid          string `json:"DistrictID"`
+	Expectedanswerdt    string `json:"ExpectedAnswerDt"`
+	Earlierorganization string `json:"EarlierOrganization"`
+	Controller          struct {
+		Text             string `json:"Text"`
+		Name             string `json:"Name"`
+		Personposition   string `json:"PersonPosition"`
+		Personname       string `json:"PersonName"`
+		Personemail      string `json:"PersonEmail"`
+		Personphone      string `json:"PersonPhone"`
+		Organizationinn  string `json:"OrganizationInn"`
+		Organizationogrn string `json:"OrganizationOgrn"`
+	} `json:"Controller"`
+	Coordinator struct {
+		Text             string `json:"Text"`
+		Name             string `json:"Name"`
+		Personposition   string `json:"PersonPosition"`
+		Personname       string `json:"PersonName"`
+		Personemail      string `json:"PersonEmail"`
+		Personphone      string `json:"PersonPhone"`
+		Organizationinn  string `json:"OrganizationInn"`
+		Organizationogrn string `json:"OrganizationOgrn"`
+	} `json:"Coordinator"`
+	Feed struct {
+		Text   string `json:"Text"`
+		Widget []struct {
+			Text   string `json:"Text"`
+			Status struct {
+				Text        string `json:"Text"`
+				Dt          string `json:"Dt"`
+				Status      string `json:"Status"`
+				Closereason string `json:"CloseReason"`
+			} `json:"Status"`
+			Answer struct {
+				Text       string `json:"Text"`
+				Dt         string `json:"Dt"`
+				Authorname string `json:"AuthorName"`
+				Author     struct {
+					Text             string `json:"Text"`
+					Name             string `json:"Name"`
+					Personposition   string `json:"PersonPosition"`
+					Personname       string `json:"PersonName"`
+					Personemail      string `json:"PersonEmail"`
+					Personphone      string `json:"PersonPhone"`
+					Organizationinn  string `json:"OrganizationInn"`
+					Organizationogrn string `json:"OrganizationOgrn"`
+				} `json:"Author"`
+				Body   string `json:"Body"`
+				Photos struct {
+					Text  string      `json:"Text"`
+					Photo interface{} `json:"Photo"`
+				} `json:"Photos"`
+				Files struct {
+					Text string `json:"Text"`
+					File struct {
+						Text         string `json:"Text"`
+						ID           string `json:"ID"`
+						Originalname string `json:"OriginalName"`
+						URL          string `json:"URL"`
+					} `json:"File"`
+				} `json:"Files"`
+				Performer   string `json:"Performer"`
+				Interimdate string `json:"InterimDate"`
+			} `json:"Answer"`
+			Petition struct {
+				Text       string `json:"Text"`
+				Dt         string `json:"Dt"`
+				Authorname string `json:"AuthorName"`
+				Body       string `json:"Body"`
+				Photos     struct {
+					Text  string      `json:"Text"`
+					Photo interface{} `json:"Photo"`
+				} `json:"Photos"`
+				Files string `json:"Files"`
+			} `json:"Petition"`
+		} `json:"Widget"`
+	} `json:"Feed"`
+	Updatetime string `json:"UpdateTime"`
+}
+
 type GetFileRequest struct {
 	Filename string `json:"filename,omitempty"`
+}
+
+func NewProblemListRequest(object GetAllProblemsRequest) interface{} {
+	if object.Status != "" {
+		return model.ProblemListRequest{
+			Page:         object.Page,
+			ItemsPerPage: object.Size,
+			Query:        object.Query,
+			Status:       object.Status,
+			District:     object.District,
+			Latitude:     object.Latitude,
+			Longitude:    object.Longitude,
+			CityObject:   object.CityObject,
+			Reason:       object.CityObject,
+			UpdatedAfter: object.UpdateAfter,
+			SortBy:       object.SortBy,
+		}
+	} else {
+		return model.ProblemListRequestWithoutStatus{
+			Page:         object.Page,
+			ItemsPerPage: object.Size,
+			Query:        object.Query,
+			District:     object.District,
+			Latitude:     object.Latitude,
+			Longitude:    object.Longitude,
+			CityObject:   object.CityObject,
+			Reason:       object.CityObject,
+			UpdatedAfter: object.UpdateAfter,
+			SortBy:       object.SortBy,
+		}
+
+	}
 }
 
 func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequest {
@@ -57,19 +179,7 @@ func (object GetAllProblemsRequest) GetSoapEnvelopeRequest() *model.EnvelopeRequ
 		"Наш Санкт-Петербург",
 	}
 
-	problemsListRequest := model.ProblemListRequest{
-		Page:         object.Page,
-		ItemsPerPage: object.Size,
-		Query:        object.Query,
-		Status:       object.Status,
-		District:     object.District,
-		Latitude:     object.Latitude,
-		Longitude:    object.Longitude,
-		CityObject:   object.CityObject,
-		Reason:       object.CityObject,
-		UpdatedAfter: object.UpdateAfter,
-		SortBy:       object.SortBy,
-	}
+	problemsListRequest := NewProblemListRequest(object)
 
 	problemsList.MessageData = model.MessageData{}
 	problemsList.MessageData.AppData = model.ProblemListAppData{
