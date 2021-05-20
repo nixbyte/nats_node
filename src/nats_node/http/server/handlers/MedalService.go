@@ -12,7 +12,7 @@ import (
 
 var MedalSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
 	httpSwagger.Handler(
-		httpSwagger.URL("/medal"),
+		httpSwagger.URL("/medal.json"),
 	))
 
 var GetTotalPersonsCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {

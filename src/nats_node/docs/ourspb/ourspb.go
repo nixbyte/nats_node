@@ -5,7 +5,7 @@
 //     Schemes: http
 //     BasePath: /ourspb
 //     Version: 1.0.0
-//     Host: localhost:8080
+//     Host: 10.241.0.136
 //
 //     Consumes:
 //     - application/json
