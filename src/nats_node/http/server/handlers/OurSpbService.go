@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	soapmodel "nats_node/http/model/soap"
 	"nats_node/utils/logger"
 	"time"
@@ -64,7 +65,7 @@ var GetProblemHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 				logger.Logger.PrintError(err)
 			}
 
-			//fmt.Fprint(ctx, state)
+			fmt.Println(ctx, state)
 			if envelope.Body.Fault.Faultstring != "" {
 				sendModelIfExist(ctx, envelope.Body.Fault, errors.New("Fault Code: "+envelope.Body.Fault.Faultcode+" Fault String: "+envelope.Body.Fault.Faultstring))
 			} else {

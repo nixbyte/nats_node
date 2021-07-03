@@ -31,18 +31,20 @@ func main() {
 	//  go request.NotificationAdd()
 	//  go request.PostAdd()
 
-	//  go request.GetAppState()
-	//	go request.GetBranches()
-	//	go request.GetBranchServices()
-	//	go request.GetDates()
-	//	go request.GetTimes()
-	//	go request.ReserveTime()
-	//	go request.TimeConfirmation()
-	//	go request.GetReservationCode()
+	go request.GetAppState()
+	go request.GetBranches()
+	go request.GetBranchServices()
+	go request.GetDates()
+	go request.GetTimes()
+	go request.ReserveTime()
+	go request.TimeConfirmation()
+	go request.GetReservationCode()
 
-	go request.GetAllProblems()
-	go request.GetProblem()
-	go request.GetFile()
+	//  go request.GetAllProblems()
+	//  go request.GetProblem()
+	//  go request.GetFile()
+	go request.GetTest()
+	go request.PostTest()
 
 	select {}
 }
