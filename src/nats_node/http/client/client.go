@@ -201,7 +201,7 @@ func (worker *HttpWorker) SendRequest(request *HttpRequest) ([]byte, error) {
 	return worker.sendRequest(request)
 }
 
-func soapCall(ws string, action string, header string, payloadInterface interface{}) ([]byte, error) {
+func SoapCall(ws string, action string, header string, payloadInterface interface{}) ([]byte, error) {
 	v := soapRequest{
 		XMLNsX:   "http://schemas.xmlsoap.org/soap/envelope/",
 		XMLNsTem: "http://tempuri.org/",
@@ -256,7 +256,7 @@ func soapCall(ws string, action string, header string, payloadInterface interfac
 }
 
 func SoapCallHandleResponse(ws string, action string, header string, payloadInterface interface{}, result interface{}) ([]byte, error) {
-	body, err := soapCall(ws, action, header, payloadInterface)
+	body, err := SoapCall(ws, action, header, payloadInterface)
 	if err != nil {
 		return nil, err
 	}

@@ -13,16 +13,17 @@ type SoapDistrictListResponse struct {
 			GetDistrictListResult struct {
 				Success   string `xml:"Success"`
 				Districts struct {
-					District []struct {
-						Text         string `xml:",chardata"`
-						DistrictName string `xml:"DistrictName"`
-						IdDistrict   string `xml:"IdDistrict"`
-						Okato        string `xml:"Okato"`
-					} `xml:"District"`
+					District []District `xml:"District"`
 				} `xml:"Districts"`
 			} `xml:"GetDistrictListResult"`
 		} `xml:"GetDistrictListResponse"`
 	} `xml:"Body"`
+}
+
+type District struct {
+	DistrictName string `xml:"DistrictName"`
+	IdDistrict   string `xml:"IdDistrict"`
+	Okato        string `xml:"Okato"`
 }
 
 type SoapLpuListRequest struct {

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/xml"
 	"errors"
 	model "nats_node/http/model/json"
 	soapmodel "nats_node/http/model/soap"
@@ -75,6 +76,7 @@ var TokenExpirationHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestC
 var DistrictListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
 	var districts soapmodel.SoapDistrictListResponse
 	var err error
 	var validHeader bool
@@ -93,12 +95,17 @@ var DistrictListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
-			err = NatsConnection.Request("GetCovidDistrictsList", bytes, &districts, 10*time.Minute)
+			err = NatsConnection.Request("GetCovidDistrictsList", bytes, &state, 10*time.Minute)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
 		}
 	}
+	err = xml.Unmarshal([]byte(state), &districts)
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
 	sendModelIfExist(ctx, districts, err)
 }
 
