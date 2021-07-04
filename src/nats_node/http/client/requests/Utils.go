@@ -1,7 +1,10 @@
 package request
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/gob"
+	context "nats_node/nats/model"
 	"nats_node/utils/logger"
 	"strconv"
 )
@@ -19,4 +22,14 @@ func GetBytesFromNatsBase64Msg(natsMsgData []byte) ([]byte, error) {
 	}
 
 	return queryBytes, err
+}
+
+func GetRequestContextFromBytesArray(b []byte) (ctx *context.RequestContext, err error) {
+
+	c := new(context.RequestContext)
+
+	network := bytes.NewBuffer(b)
+	bytesDecoder := gob.NewDecoder(network)
+	err = bytesDecoder.Decode(&c)
+	return c, err
 }

@@ -94,7 +94,6 @@ var GetFileHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 		logger.Logger.PrintError(err)
 	}
 
-	//fmt.Fprint(ctx, state)
 	if envelope.Body.Fault.Faultstring != "" {
 		sendModelIfExist(ctx, envelope.Body.Fault, errors.New("Fault Code: "+envelope.Body.Fault.Faultcode+" Fault String: "+envelope.Body.Fault.Faultstring))
 	} else if envelope.Body.GetFileResponse.MessageData.AppData.Error.ErrorMessage != "" {

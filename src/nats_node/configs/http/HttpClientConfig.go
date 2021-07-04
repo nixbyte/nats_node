@@ -10,6 +10,7 @@ import (
 
 type ClientConfig struct {
 	DefaultHostName       string `json:"client_hostname"`
+	Guid                  string `json:"guid"`
 	DealerConnectTimeout  int    `json:"connection_timeout"`
 	DealerKeepAlive       int    `json:"keepalive"`
 	MaxIdleConns          int    `json:"max_idle_connections"`
@@ -21,7 +22,8 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"https://gorod.gov.spb.ru",
+		"http://r78-rc.zdrav.netrika.ru",
+		"C4F530D6-E6EC-4C6E-ACE7-231ADFE928CB",
 		60,
 		60,
 		65500,

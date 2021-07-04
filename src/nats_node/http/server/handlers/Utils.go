@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"errors"
 	"fmt"
 	jsonmodel "nats_node/http/model/json"
+	context "nats_node/nats/model"
 	"nats_node/utils/logger"
 	"runtime/debug"
 
@@ -64,6 +66,32 @@ func checkIfExistParameter(ctx *fasthttp.RequestCtx, name string) (bool, error) 
 	}
 }
 
+func checkHeader(ctx *fasthttp.RequestCtx, h string) (bool, error) {
+
+	header := []byte(ctx.Request.Header.Peek(h))
+
+	if len(header) == 0 {
+		return false, errors.New(h + " Header not found or empty")
+	} else {
+		return true, nil
+	}
+}
+func validateHeaders(ctx *fasthttp.RequestCtx, headers []string) (bool, error) {
+	var buffer bytes.Buffer
+	for _, h := range headers {
+		exist, _ := checkHeader(ctx, h)
+		if exist != true {
+			buffer.WriteString(" " + h + " ")
+		}
+	}
+
+	if len(buffer.Bytes()) != 0 {
+		return false, errors.New("Headers " + buffer.String() + " not found")
+	} else {
+		return true, nil
+	}
+}
+
 func validateParameters(ctx *fasthttp.RequestCtx, params []string) (bool, error) {
 	var buffer bytes.Buffer
 	for _, param := range params {
@@ -78,4 +106,11 @@ func validateParameters(ctx *fasthttp.RequestCtx, params []string) (bool, error)
 	} else {
 		return true, nil
 	}
+}
+
+func requestContextToBytesArray(context *context.RequestContext) ([]byte, error) {
+	var bytesBuffer bytes.Buffer
+	bytesEncoder := gob.NewEncoder(&bytesBuffer)
+	err := bytesEncoder.Encode(&context)
+	return bytesBuffer.Bytes(), err
 }

@@ -20,6 +20,7 @@ func sendSignRequest(env jsonmodel.SoapEnvelope) ([]byte, error) {
 
 	signServiceConfig := &configs.ClientConfig{
 		"http://localhost:8181",
+		"",
 		60,
 		60,
 		65500,

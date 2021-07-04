@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"nats_node/utils/monitoring"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"regexp"
 	"strings"
@@ -45,6 +47,26 @@ type HttpRequest struct {
 	Parameters url.Values
 	Body       io.Reader
 	BodyMap    map[string]interface{}
+}
+
+type soapRequest struct {
+	XMLName  xml.Name `xml:"x:Envelope"`
+	XMLNsX   string   `xml:"xmlns:x,attr"`
+	XMLNsTem string   `xml:"xmlns:tem,attr"`
+	XMLNsHub string   `xml:"xmlns:hub,attr"`
+	Header   soapHeader
+	Body     soapBody
+}
+
+type soapBody struct {
+	XMLName xml.Name `xml:"x:Body"`
+	Payload interface{}
+}
+
+type soapHeader struct {
+	XMLName       xml.Name `xml:"x:Header"`
+	Text          string   `xml:",chardata"`
+	Authorization string   `xml:"x:Authorization"`
 }
 
 func init() {
@@ -177,6 +199,79 @@ func (worker *HttpWorker) sendRequest(request *HttpRequest) ([]byte, error) {
 //Parameter parameters is a url.Values interface wich contains map with query parameters. Can be nil
 func (worker *HttpWorker) SendRequest(request *HttpRequest) ([]byte, error) {
 	return worker.sendRequest(request)
+}
+
+func soapCall(ws string, action string, header string, payloadInterface interface{}) ([]byte, error) {
+	v := soapRequest{
+		XMLNsX:   "http://schemas.xmlsoap.org/soap/envelope/",
+		XMLNsTem: "http://tempuri.org/",
+		XMLNsHub: "http://schemas.datacontract.org/2004/07/HubService2",
+		Header: soapHeader{
+			Authorization: header,
+		},
+		Body: soapBody{
+			Payload: payloadInterface,
+		},
+	}
+	payload, err := xml.MarshalIndent(v, "", "  ")
+
+	timeout := time.Duration(30 * time.Second)
+
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	req, err := http.NewRequest("POST", ws, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", "text/xml, multipart/related")
+	req.Header.Set("SOAPAction", action)
+	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
+
+	reqd, err := httputil.DumpRequest(req, true)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(reqd))
+
+	response, err := client.Do(req)
+	if err != nil {
+		logger.Logger.PrintError(err)
+		return nil, err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(bodyBytes))
+
+	defer response.Body.Close()
+
+	return bodyBytes, nil
+}
+
+func SoapCallHandleResponse(ws string, action string, header string, payloadInterface interface{}, result interface{}) ([]byte, error) {
+	body, err := soapCall(ws, action, header, payloadInterface)
+	if err != nil {
+		return nil, err
+	}
+
+	err = xml.Unmarshal(body, result)
+	if err != nil {
+		return nil, err
+	}
+	if monitoring.Monitoring.WRITE_METRICS == true {
+		metricName := strings.Split(action, "/")
+		name := metricName[len(metricName)-1]
+		go monitoring.HttpMetrics.AddCounterMetric(name, "request to Hubserver count")
+	}
+
+	return body, nil
 }
 
 func (request HttpRequest) PrepareMetricName(prefix string) string {
