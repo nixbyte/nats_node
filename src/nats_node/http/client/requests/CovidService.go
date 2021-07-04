@@ -2,6 +2,7 @@ package request
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -204,11 +205,213 @@ func GetDistrictList() {
 }
 
 func GetDistricts() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidDistrictStringsList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			pa := soapmodel.SoapDistrictRequest{
+				Guid: GUID,
+			}
+
+			var response *soapmodel.SoapDistrictListResponse = &soapmodel.SoapDistrictListResponse{}
+			authorization := context.Headers["Authorization"]
+
+			if value, found := c.Get("districts"); found {
+				response = value.(*soapmodel.SoapDistrictListResponse)
+			} else {
+
+				_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				} else {
+					if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
+						c.Set("districts", response, cache.NoExpiration)
+					}
+				}
+			}
+
+			districts := response.Body.GetDistrictListResponse.GetDistrictListResult.Districts.District
+			districtStrings := []string{}
+			for _, district := range districts {
+				districtStrings = append(districtStrings, district.DistrictName)
+			}
+
+			bytes, err := json.Marshal(districtStrings)
+
+			err = msg.Respond(bytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+
+func GetLpuList() {
+
+	sub, err := NatsConnection.Conn.SubscribeSync("GetLpuList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			valid, err := validateParameters(context, []string{"idDistrict"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			var respBytes []byte
+
+			if valid == true {
+				pa := soapmodel.SoapLpuListRequest{
+					IdDistrict: context.QueryArgs["idDistrict"],
+					Guid:       GUID,
+				}
+
+				var response *soapmodel.SoapLpuListResponse = &soapmodel.SoapLpuListResponse{}
+				authorization := context.Headers["Authorization"]
+
+				if value, found := c.Get(pa.IdDistrict); found {
+					response = value.(*soapmodel.SoapLpuListResponse)
+					respBytes, err = xml.Marshal(response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					}
+				} else {
+
+					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetLPUList", authorization, pa, response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					} else {
+						if response.Body.GetLPUListResponse.GetLPUListResult.Success == "true" {
+							c.Set(pa.IdDistrict, response, cache.DefaultExpiration)
+						}
+					}
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+
+}
+func GetCovidLpuList() {
+
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidLpuList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var respBytes []byte
+
+			pa := soapmodel.SoapCovidLpuListRequest{
+				Guid: GUID,
+			}
+
+			var response *soapmodel.SoapCovidLpuListResponse = &soapmodel.SoapCovidLpuListResponse{}
+			authorization := context.Headers["Authorization"]
+
+			if value, found := c.Get("lpus"); found {
+				response = value.(*soapmodel.SoapCovidLpuListResponse)
+				respBytes, err = xml.Marshal(response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+			} else {
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/CovidLpuService.svc", "http://tempuri.org/ICovidLpuService/GetLpus", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				} else {
+					if response.Body.GetLpusResponse.GetLpusResult.Success == "true" {
+						lpus := response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu
+
+						for i, item := range lpus {
+							if item.CountOfAvailableCovidAppointments == "0" {
+								response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu = removeEmptyLpus(lpus, i)
+							}
+						}
+						c.Set("lpus", response, cache.DefaultExpiration)
+					}
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
 
 }
 
-func GetLpuList()               {}
-func GetCovidLpuList()          {}
+func removeEmptyLpus(s []soapmodel.Lpu, i int) []soapmodel.Lpu {
+	return append(s[:i], s[i+1:]...)
+}
+
 func GetSpecialityList()        {}
 func GetDoctorList()            {}
 func GetAppointmentList()       {}
@@ -217,6 +420,8 @@ func AddPatient()               {}
 func UpdatePhone()              {}
 func SetAppointment()           {}
 func DeleteAppointment()        {}
+func GetCovidAppointmentCount() {}
+
 func GetCovidLpuNames()         {}
 func GetCovidLpuIds()           {}
 func GetCovidLpuIdByName()      {}
@@ -228,4 +433,3 @@ func GetCovidDocIds()           {}
 func GetCovidDocId()            {}
 func GetCovidAppointmentTimes() {}
 func GetCovidAppointmentIds()   {}
-func GetCovidAppointmentCount() {}

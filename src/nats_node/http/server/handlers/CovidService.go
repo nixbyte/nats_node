@@ -140,37 +140,65 @@ var DistrictsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var LpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
 	var lpuList soapmodel.SoapLpuListResponse
+	var err error
 
-	if ctx.IsPost() == true {
-		err = errors.New("Method POST not supported")
-	} else {
+	validHeader, err := validateHeaders(ctx, []string{"Authorization"})
+	validParameters, err := validateParameters(ctx, []string{"idDistrict"})
+
+	if validHeader == true && validParameters == true {
+
 		rc := new(context.RequestContext)
 		rc.New(ctx)
 		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetLpuList", bytes, &lpuList, 10*time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
+		err = NatsConnection.Request("GetLpuList", bytes, &state, 10*time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
 		}
 	}
+
+	err = xml.Unmarshal([]byte(state), &lpuList)
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
 	sendModelIfExist(ctx, lpuList, err)
 }
 
 var CovidLpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	var covidLpuList soapmodel.SoapCovidLpuListResponse
+	var state string
+	var lpuList soapmodel.SoapCovidLpuListResponse
+	var err error
+	var validHeader bool
 
-	if ctx.IsPost() == true {
-		err = errors.New("Method POST not supported")
-	} else {
+	validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+
+	if validHeader == true {
+
 		rc := new(context.RequestContext)
 		rc.New(ctx)
 		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidLpuList", bytes, &covidLpuList, 10*time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
+		err = NatsConnection.Request("GetCovidLpuList", bytes, &state, 10*time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
 		}
 	}
-	sendModelIfExist(ctx, covidLpuList, err)
+
+	err = xml.Unmarshal([]byte(state), &lpuList)
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	sendModelIfExist(ctx, lpuList, err)
 }
 
 var CovidLpuIdByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
