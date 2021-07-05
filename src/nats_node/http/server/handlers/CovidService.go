@@ -159,11 +159,10 @@ var LpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 		if err != nil {
 			logger.Logger.PrintError(err)
 		}
-	}
-
-	err = xml.Unmarshal([]byte(state), &lpuList)
-	if err != nil {
-		logger.Logger.PrintError(err)
+		err = xml.Unmarshal([]byte(state), &lpuList)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
 	}
 
 	sendModelIfExist(ctx, lpuList, err)
@@ -176,10 +175,12 @@ var CovidLpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 	var lpuList soapmodel.SoapCovidLpuListResponse
 	var err error
 	var validHeader bool
+	var validParameter bool
 
 	validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+	validParameter, err = validateParameters(ctx, []string{"idDistrict"})
 
-	if validHeader == true {
+	if validHeader == true && validParameter == true {
 
 		rc := new(context.RequestContext)
 		rc.New(ctx)
@@ -191,11 +192,10 @@ var CovidLpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 		if err != nil {
 			logger.Logger.PrintError(err)
 		}
-	}
-
-	err = xml.Unmarshal([]byte(state), &lpuList)
-	if err != nil {
-		logger.Logger.PrintError(err)
+		err = xml.Unmarshal([]byte(state), &lpuList)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
 	}
 
 	sendModelIfExist(ctx, lpuList, err)
@@ -205,15 +205,26 @@ var CovidLpuIdByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.Request
 	defer CatchPanic(ctx)
 
 	var lpuId string
+	var validHeader bool
+	var err error
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
+
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 			err = NatsConnection.Request("GetCovidLpuIdByName", bytes, &lpuId, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
 	sendModelIfExist(ctx, lpuId, err)
@@ -222,52 +233,107 @@ var CovidLpuIdByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.Request
 var SpecialityListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
 	var specialityList soapmodel.SoapSpecialityListResponse
+	var err error
+	var validHeader bool
+	var validParameter bool
 
 	if ctx.IsPost() == true {
-		err = errors.New("Method POST not supported")
+		err = errors.New("Method POST not uspported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidSpecialityList", bytes, &specialityList, 10*time.Minute)
+
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		validParameter, err = validateParameters(ctx, []string{"idLpu"})
+
+		if validHeader == true && validParameter == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetCovidSpecialityList", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &specialityList)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
+
 	sendModelIfExist(ctx, specialityList, err)
 }
 
 var DoctorListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
 	var doctorList soapmodel.SoapDoctorListResponse
+	var err error
+	var validHeader bool
+	var validParameter bool
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidDoctorList", bytes, &doctorList, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		validParameter, err = validateParameters(ctx, []string{"idSpeciality", "idLpu"})
+
+		if validHeader == true && validParameter == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetCovidDoctorList", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &doctorList)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
+
 	sendModelIfExist(ctx, doctorList, err)
 }
 
 var AvailableAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
 	var appointmentsList soapmodel.SoapAppointmentListResponse
+	var err error
+	var validHeader bool
+	var validParameter bool
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidAppointmentList", bytes, &appointmentsList, 10*time.Minute)
+
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		validParameter, err = validateParameters(ctx, []string{"idDoc", "idLpu"})
+
+		if validHeader == true && validParameter == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetCovidAppointmentList", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &appointmentsList)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
 	sendModelIfExist(ctx, appointmentsList, err)

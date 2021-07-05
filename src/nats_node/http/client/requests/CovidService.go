@@ -412,9 +412,232 @@ func removeEmptyLpus(s []soapmodel.Lpu, i int) []soapmodel.Lpu {
 	return append(s[:i], s[i+1:]...)
 }
 
-func GetSpecialityList()        {}
-func GetDoctorList()            {}
-func GetAppointmentList()       {}
+func GetSpecialityList() {
+
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidSpecialityList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var validParameters bool
+			validParameters, err = validateParameters(context, []string{"idLpu"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var respBytes []byte
+
+			if validParameters == true {
+
+				pa := soapmodel.SoapSpecialityListRequest{
+					IdLpu: context.QueryArgs["idLpu"],
+					Guid:  GUID,
+				}
+
+				var response *soapmodel.SoapSpecialityListResponse = &soapmodel.SoapSpecialityListResponse{}
+				authorization := context.Headers["Authorization"]
+
+				if value, found := c.Get(pa.IdLpu); found {
+					response = value.(*soapmodel.SoapSpecialityListResponse)
+					respBytes, err = xml.Marshal(response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					}
+				} else {
+
+					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetSpesialityList", authorization, pa, response)
+
+					if err != nil {
+						logger.Logger.PrintError(err)
+					} else {
+						if response.Body.GetSpesialityListResponse.GetSpesialityListResult.Success == "true" {
+							c.Set(pa.IdLpu, response, cache.DefaultExpiration)
+						}
+					}
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+func GetDoctorList() {
+
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidDoctorList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var validParameters bool
+			validParameters, err = validateParameters(context, []string{"idSpeciality", "idLpu"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var respBytes []byte
+
+			if validParameters == true {
+
+				pa := soapmodel.SoapDoctorListRequest{
+					IdLpu:        context.QueryArgs["idLpu"],
+					IdSpesiality: context.QueryArgs["idSpeciality"],
+					Guid:         GUID,
+				}
+
+				var response *soapmodel.SoapDoctorListResponse = &soapmodel.SoapDoctorListResponse{}
+				authorization := context.Headers["Authorization"]
+
+				if value, found := c.Get(pa.IdLpu + pa.IdSpesiality); found {
+					response = value.(*soapmodel.SoapDoctorListResponse)
+					respBytes, err = xml.Marshal(response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					}
+				} else {
+
+					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDoctorList", authorization, pa, response)
+
+					if err != nil {
+						logger.Logger.PrintError(err)
+					} else {
+						if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+							c.Set(pa.IdLpu+pa.IdSpesiality, response, 10*time.Minute)
+						}
+					}
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+
+}
+func GetAppointmentList() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidAppointmentList")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var validParameters bool
+			validParameters, err = validateParameters(context, []string{"idDoc", "idLpu"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var respBytes []byte
+
+			if validParameters == true {
+
+				pa := soapmodel.SoapAppointmentListRequest{
+					IdDoc:      context.QueryArgs["idDoc"],
+					IdLpu:      context.QueryArgs["idLpu"],
+					VisitStart: time.Now().Format("2006-01-02T15:04:05"),
+					VisitEnd:   time.Now().Format("2006-01-02T15:04:05"),
+					Guid:       GUID,
+				}
+
+				var response *soapmodel.SoapAppointmentListResponse = &soapmodel.SoapAppointmentListResponse{}
+				authorization := context.Headers["Authorization"]
+
+				if value, found := c.Get(pa.IdDoc + pa.IdLpu); found {
+					response = value.(*soapmodel.SoapAppointmentListResponse)
+					respBytes, err = xml.Marshal(response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					}
+				} else {
+
+					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetAvaibleAppointments", authorization, pa, response)
+
+					if err != nil {
+						logger.Logger.PrintError(err)
+					} else {
+						if response.Body.GetAvaibleAppointmentsResponse.GetAvaibleAppointmentsResult.Success == "true" {
+							c.Set(pa.IdDoc+pa.IdLpu, response, 1*time.Hour)
+						}
+					}
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
 func CheckPatient()             {}
 func AddPatient()               {}
 func UpdatePhone()              {}
