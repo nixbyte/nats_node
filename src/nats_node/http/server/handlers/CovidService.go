@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	model "nats_node/http/model/json"
@@ -99,13 +100,12 @@ var DistrictListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
+			err = xml.Unmarshal([]byte(state), &districts)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
-	err = xml.Unmarshal([]byte(state), &districts)
-	if err != nil {
-		logger.Logger.PrintError(err)
-	}
-
 	sendModelIfExist(ctx, districts, err)
 }
 
@@ -143,28 +143,30 @@ var LpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	var state string
 	var lpuList soapmodel.SoapLpuListResponse
 	var err error
+	var validHeader bool
+	var validParameters bool
 
-	validHeader, err := validateHeaders(ctx, []string{"Authorization"})
-	validParameters, err := validateParameters(ctx, []string{"idDistrict"})
+	validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 
-	if validHeader == true && validParameters == true {
-
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err != nil {
-			logger.Logger.PrintError(err)
-		}
-		err = NatsConnection.Request("GetLpuList", bytes, &state, 10*time.Minute)
-		if err != nil {
-			logger.Logger.PrintError(err)
-		}
-		err = xml.Unmarshal([]byte(state), &lpuList)
-		if err != nil {
-			logger.Logger.PrintError(err)
+	if validHeader == true {
+		validParameters, err = validateParameters(ctx, []string{"idDistrict"})
+		if validParameters == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetLpuList", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &lpuList)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
-
 	sendModelIfExist(ctx, lpuList, err)
 }
 
@@ -178,26 +180,27 @@ var CovidLpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 	var validParameter bool
 
 	validHeader, err = validateHeaders(ctx, []string{"Authorization"})
-	validParameter, err = validateParameters(ctx, []string{"idDistrict"})
 
-	if validHeader == true && validParameter == true {
+	if validHeader == true {
+		validParameter, err = validateParameters(ctx, []string{"idDistrict"})
+		if validParameter == true {
 
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err != nil {
-			logger.Logger.PrintError(err)
-		}
-		err = NatsConnection.Request("GetCovidLpuList", bytes, &state, 10*time.Minute)
-		if err != nil {
-			logger.Logger.PrintError(err)
-		}
-		err = xml.Unmarshal([]byte(state), &lpuList)
-		if err != nil {
-			logger.Logger.PrintError(err)
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetCovidLpuList", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &lpuList)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
-
 	sendModelIfExist(ctx, lpuList, err)
 }
 
@@ -244,22 +247,24 @@ var SpecialityListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCt
 	} else {
 
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
-		validParameter, err = validateParameters(ctx, []string{"idLpu"})
 
-		if validHeader == true && validParameter == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = NatsConnection.Request("GetCovidSpecialityList", bytes, &state, 10*time.Minute)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = xml.Unmarshal([]byte(state), &specialityList)
-			if err != nil {
-				logger.Logger.PrintError(err)
+		if validHeader == true {
+			validParameter, err = validateParameters(ctx, []string{"idLpu"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = NatsConnection.Request("GetCovidSpecialityList", bytes, &state, 10*time.Minute)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = xml.Unmarshal([]byte(state), &specialityList)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
 			}
 		}
 	}
@@ -280,26 +285,27 @@ var DoctorListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 		err = errors.New("Method POST not supported")
 	} else {
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
-		validParameter, err = validateParameters(ctx, []string{"idSpeciality", "idLpu"})
 
-		if validHeader == true && validParameter == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = NatsConnection.Request("GetCovidDoctorList", bytes, &state, 10*time.Minute)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = xml.Unmarshal([]byte(state), &doctorList)
-			if err != nil {
-				logger.Logger.PrintError(err)
+		if validHeader == true {
+			validParameter, err = validateParameters(ctx, []string{"idSpeciality", "idLpu"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = NatsConnection.Request("GetCovidDoctorList", bytes, &state, 10*time.Minute)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = xml.Unmarshal([]byte(state), &doctorList)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
 			}
 		}
 	}
-
 	sendModelIfExist(ctx, doctorList, err)
 }
 
@@ -317,22 +323,24 @@ var AvailableAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.Req
 	} else {
 
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
-		validParameter, err = validateParameters(ctx, []string{"idDoc", "idLpu"})
 
-		if validHeader == true && validParameter == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = NatsConnection.Request("GetCovidAppointmentList", bytes, &state, 10*time.Minute)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = xml.Unmarshal([]byte(state), &appointmentsList)
-			if err != nil {
-				logger.Logger.PrintError(err)
+		if validHeader == true {
+			validParameter, err = validateParameters(ctx, []string{"idDoc", "idLpu"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = NatsConnection.Request("GetCovidAppointmentList", bytes, &state, 10*time.Minute)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = xml.Unmarshal([]byte(state), &appointmentsList)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
 			}
 		}
 	}
@@ -342,16 +350,42 @@ var AvailableAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.Req
 var CheckPatientHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
+	var person *model.Patient = &model.Patient{}
 	var patientResponse soapmodel.SoapCheckPatientResponse
+	var validHeader bool
+	var validModel bool
+	var err error
 
 	if ctx.IsGet() == true {
 		err = errors.New("Method GET not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("CheckPatient", bytes, &patientResponse, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+
+			err = json.Unmarshal(rc.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			validModel, err = validatePatient(*person)
+
+			if validModel == true {
+				bytes, err := requestContextToBytesArray(rc)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = NatsConnection.Request("CheckPatient", bytes, &state, 10*time.Minute)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = xml.Unmarshal([]byte(state), &patientResponse)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+			}
 		}
 	}
 	sendModelIfExist(ctx, patientResponse, err)
@@ -360,16 +394,42 @@ var CheckPatientHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 var AddPatientHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	var patientResponse soapmodel.SoapCheckPatientResponse
+	var state string
+	var person *model.Patient = &model.Patient{}
+	var patientResponse soapmodel.SoapAddPatientResponse
+	var validHeader bool
+	var validModel bool
+	var err error
 
 	if ctx.IsGet() == true {
 		err = errors.New("Method GET not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("AddPatient", bytes, &patientResponse, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+
+			err = json.Unmarshal(rc.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			validModel, err = validatePatient(*person)
+
+			if validModel == true {
+				bytes, err := requestContextToBytesArray(rc)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = NatsConnection.Request("AddPatient", bytes, &state, 10*time.Minute)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+				err = xml.Unmarshal([]byte(state), &patientResponse)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+			}
 		}
 	}
 	sendModelIfExist(ctx, patientResponse, err)
@@ -378,16 +438,35 @@ var AddPatientHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var UpdatePhoneHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
+	var person *model.Patient
 	var updatePhoneResponse soapmodel.SoapUpdatePhoneResponse
+	var validHeader bool
 
 	if ctx.IsGet() == true {
 		err = errors.New("Method GET not supported")
 	} else {
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 		rc := new(context.RequestContext)
 		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("UpdatePhone", bytes, &updatePhoneResponse, 10*time.Minute)
+
+		err := json.Unmarshal(rc.Body, person)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
+		if validHeader == true {
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("UpdatePhone", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &updatePhoneResponse)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
 	sendModelIfExist(ctx, updatePhoneResponse, err)
@@ -396,16 +475,35 @@ var UpdatePhoneHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 var SetAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
+	var person *model.Patient = &model.Patient{}
 	var setAppointmentResponse soapmodel.SoapSetAppointmentResponse
+	var validHeader bool
 
 	if ctx.IsGet() == true {
 		err = errors.New("Method GET not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("SetAppointment", bytes, &setAppointmentResponse, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+
+			err := json.Unmarshal(rc.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("SetAppointment", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &setAppointmentResponse)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
 	sendModelIfExist(ctx, setAppointmentResponse, err)
@@ -414,16 +512,35 @@ var SetAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCt
 var DeleteAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var state string
+	var person *model.Patient = &model.Patient{}
 	var deleteAppointmentResponse soapmodel.SoapDeleteAppointmentResponse
+	var validHeader bool
 
 	if ctx.IsGet() == true {
 		err = errors.New("Method GET not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("DeleteAppointment", bytes, &deleteAppointmentResponse, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+
+			err := json.Unmarshal(rc.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("DeleteAppointment", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &deleteAppointmentResponse)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
 		}
 	}
 	sendModelIfExist(ctx, deleteAppointmentResponse, err)

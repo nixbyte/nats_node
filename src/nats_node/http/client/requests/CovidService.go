@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"nats_node/http/client"
+	model "nats_node/http/model/json"
 	soapmodel "nats_node/http/model/soap"
 	context "nats_node/nats/model"
 	"nats_node/utils/logger"
@@ -638,11 +639,369 @@ func GetAppointmentList() {
 	}
 	defer NatsConnection.Close()
 }
-func CheckPatient()             {}
-func AddPatient()               {}
-func UpdatePhone()              {}
-func SetAppointment()           {}
-func DeleteAppointment()        {}
+func CheckPatient() {
+	sub, err := NatsConnection.Conn.SubscribeSync("CheckPatient")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var response *soapmodel.SoapCheckPatientResponse = &soapmodel.SoapCheckPatientResponse{}
+			var person *model.Patient = &model.Patient{
+				Firstname:     "",
+				Lastname:      "",
+				Middlename:    "",
+				Phone:         "",
+				Birthday:      0,
+				IdLpu:         "",
+				IdPat:         "",
+				IdAppointment: "",
+				Snils:         "",
+				DocumentN:     "",
+				DocumentS:     "",
+				PolisN:        "",
+				PolisS:        "",
+			}
+
+			err = json.Unmarshal(context.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			var respBytes []byte
+			validPatient, err := validatePatient(*person)
+
+			if validPatient == true {
+
+				soapPat := soapmodel.SoapPatient{
+					Birthday:   time.Unix(person.Birthday, 0).UTC().Format("2006-01-02T15:04:05"),
+					Name:       person.Firstname,
+					SecondName: person.Lastname,
+					Surname:    person.Middlename,
+					Snils:      person.Snils,
+					Document_N: person.DocumentN,
+					Document_S: person.DocumentS,
+					Polis_N:    person.PolisN,
+					Polis_S:    person.PolisS,
+				}
+
+				pa := soapmodel.SoapCheckPatientRequest{
+					Pat:   soapPat,
+					IdLpu: person.IdLpu,
+					Guid:  GUID,
+				}
+
+				authorization := context.Headers["Authorization"]
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/CheckPatient", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+func AddPatient() {
+	sub, err := NatsConnection.Conn.SubscribeSync("AddPatient")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = checkHeader(context)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var response *soapmodel.SoapAddPatientResponse = &soapmodel.SoapAddPatientResponse{}
+			var person *model.Patient = &model.Patient{
+				Firstname:     "",
+				Lastname:      "",
+				Middlename:    "",
+				Phone:         "",
+				Birthday:      0,
+				IdLpu:         "",
+				IdPat:         "",
+				IdAppointment: "",
+				Snils:         "",
+				DocumentN:     "",
+				DocumentS:     "",
+				PolisN:        "",
+				PolisS:        "",
+			}
+
+			err = json.Unmarshal(context.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			var respBytes []byte
+			validPatient, err := validatePatient(*person)
+
+			if validPatient == true {
+
+				soapPat := soapmodel.SoapPatient{
+					Birthday:   time.Unix(person.Birthday, 0).UTC().Format("2006-01-02T15:04:05"),
+					Name:       person.Firstname,
+					SecondName: person.Lastname,
+					Surname:    person.Middlename,
+					Snils:      person.Snils,
+					Document_N: person.DocumentN,
+					Document_S: person.DocumentS,
+					Polis_N:    person.PolisN,
+					Polis_S:    person.PolisS,
+					CellPhone:  person.Phone,
+					HomePhone:  person.Phone,
+				}
+
+				pa := soapmodel.SoapAddPatientRequest{
+					Pat:   soapPat,
+					IdLpu: person.IdLpu,
+					Guid:  GUID,
+				}
+
+				authorization := context.Headers["Authorization"]
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/AddNewPatient", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+
+}
+
+func UpdatePhone() {
+	sub, err := NatsConnection.Conn.SubscribeSync("UpdatePhone")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			var respBytes []byte
+			var response *soapmodel.SoapUpdatePhoneResponse = &soapmodel.SoapUpdatePhoneResponse{}
+			var person *model.Patient = &model.Patient{
+				Firstname:     "",
+				Lastname:      "",
+				Middlename:    "",
+				Phone:         "",
+				Birthday:      0,
+				IdLpu:         "",
+				IdPat:         "",
+				IdAppointment: "",
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = json.Unmarshal(context.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			pa := soapmodel.SoapUpdatePhoneRequest{
+				IdLpu:     person.IdLpu,
+				IdPat:     person.IdPat,
+				HomePhone: person.Phone,
+				CellPhone: person.Phone,
+				Guid:      GUID,
+			}
+
+			authorization := context.Headers["Authorization"]
+
+			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/UpdatePhoneByIdPat", authorization, pa, response)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+
+}
+func SetAppointment() {
+	sub, err := NatsConnection.Conn.SubscribeSync("SetAppointment")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			var respBytes []byte
+			var response *soapmodel.SoapSetAppointmentResponse = &soapmodel.SoapSetAppointmentResponse{}
+			var person *model.Patient = &model.Patient{
+				Firstname:     "",
+				Lastname:      "",
+				Middlename:    "",
+				Phone:         "",
+				Birthday:      0,
+				IdLpu:         "",
+				IdPat:         "",
+				IdAppointment: "",
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = json.Unmarshal(context.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			pa := soapmodel.SoapSetAppointmentRequest{
+				IdAppointment: person.IdAppointment,
+				IdLpu:         person.IdLpu,
+				IdPat:         person.IdPat,
+				Guid:          GUID,
+			}
+
+			authorization := context.Headers["Authorization"]
+
+			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/SetAppointment", authorization, pa, response)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+func DeleteAppointment() {
+	sub, err := NatsConnection.Conn.SubscribeSync("DeleteAppointment")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			var respBytes []byte
+			var response *soapmodel.SoapDeleteAppointmentResponse = &soapmodel.SoapDeleteAppointmentResponse{}
+			var person *model.Patient = &model.Patient{
+				Firstname:     "",
+				Lastname:      "",
+				Middlename:    "",
+				Phone:         "",
+				Birthday:      0,
+				IdLpu:         "",
+				IdPat:         "",
+				IdAppointment: "",
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = json.Unmarshal(context.Body, person)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			pa := soapmodel.SoapDeleteAppointmentRequest{
+				IdAppointment: person.IdAppointment,
+				IdLpu:         person.IdLpu,
+				IdPat:         person.IdPat,
+				Guid:          GUID,
+			}
+
+			authorization := context.Headers["Authorization"]
+
+			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/CreateClaimForRefusal", authorization, pa, response)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
 func GetCovidAppointmentCount() {}
 
 func GetCovidLpuNames()         {}

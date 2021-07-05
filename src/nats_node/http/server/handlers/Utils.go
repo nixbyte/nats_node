@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	jsonmodel "nats_node/http/model/json"
+	model "nats_node/http/model/json"
 	context "nats_node/nats/model"
 	"nats_node/utils/logger"
 	"runtime/debug"
@@ -68,7 +69,7 @@ func checkIfExistParameter(ctx *fasthttp.RequestCtx, name string) (bool, error) 
 
 func checkHeader(ctx *fasthttp.RequestCtx, h string) (bool, error) {
 
-	header := []byte(ctx.Request.Header.Peek(h))
+	header := ctx.Request.Header.Peek(h)
 
 	if len(header) == 0 {
 		return false, errors.New(h + " Header not found or empty")
@@ -76,17 +77,17 @@ func checkHeader(ctx *fasthttp.RequestCtx, h string) (bool, error) {
 		return true, nil
 	}
 }
-func validateHeaders(ctx *fasthttp.RequestCtx, headers []string) (bool, error) {
+func validateHeaders(ctx *fasthttp.RequestCtx, h []string) (bool, error) {
 	var buffer bytes.Buffer
-	for _, h := range headers {
-		exist, _ := checkHeader(ctx, h)
+	for _, header := range h {
+		exist, _ := checkHeader(ctx, header)
 		if exist != true {
-			buffer.WriteString(" " + h + " ")
+			buffer.WriteString(" " + header + " ")
 		}
 	}
 
 	if len(buffer.Bytes()) != 0 {
-		return false, errors.New("Headers " + buffer.String() + " not found")
+		return false, errors.New("Headers: " + buffer.String() + " not found")
 	} else {
 		return true, nil
 	}
@@ -113,4 +114,22 @@ func requestContextToBytesArray(context *context.RequestContext) ([]byte, error)
 	bytesEncoder := gob.NewEncoder(&bytesBuffer)
 	err := bytesEncoder.Encode(&context)
 	return bytesBuffer.Bytes(), err
+}
+
+func validatePatient(patient model.Patient) (bool, error) {
+	isValid := true
+
+	if len(patient.Firstname) == 0 ||
+		len(patient.Lastname) == 0 ||
+		len(patient.Middlename) == 0 ||
+		len(patient.Phone) == 0 ||
+		patient.Birthday == 0 {
+
+		isValid = false
+	}
+	if isValid == true {
+		return isValid, nil
+	} else {
+		return false, errors.New("Person is not valid or empty")
+	}
 }
