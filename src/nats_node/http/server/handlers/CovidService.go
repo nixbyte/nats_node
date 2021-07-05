@@ -204,35 +204,6 @@ var CovidLpuListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx)
 	sendModelIfExist(ctx, lpuList, err)
 }
 
-var CovidLpuIdByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
-	defer CatchPanic(ctx)
-
-	var lpuId string
-	var validHeader bool
-	var err error
-
-	if ctx.IsPost() == true {
-		err = errors.New("Method POST not supported")
-	} else {
-
-		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
-
-		if validHeader == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-			err = NatsConnection.Request("GetCovidLpuIdByName", bytes, &lpuId, 10*time.Minute)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			}
-		}
-	}
-	sendModelIfExist(ctx, lpuId, err)
-}
-
 var SpecialityListHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
@@ -546,19 +517,47 @@ var DeleteAppointmentHandler fasthttp.RequestHandler = func(ctx *fasthttp.Reques
 	sendModelIfExist(ctx, deleteAppointmentResponse, err)
 }
 
+var CovidAppointmentCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+	defer CatchPanic(ctx)
+
+	var validHeader bool
+	var covidAppointmentCount model.CovidAppointmentCountResponse
+
+	if ctx.IsPost() == true {
+		err = errors.New("Method POST not supported")
+	} else {
+
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidAppointmentCount", bytes, &covidAppointmentCount, 10*time.Minute)
+			}
+		}
+	}
+	sendModelIfExist(ctx, covidAppointmentCount, err)
+}
+
 var CovidLpuNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidLpuNames model.CovidLpuNames
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidLpuNames", bytes, &covidLpuNames, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidLpuNames", bytes, &covidLpuNames, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidLpuNames, err)
@@ -567,34 +566,71 @@ var CovidLpuNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 var CovidLpuIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidLpuIds model.CovidLpuIds
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidLpuIds", bytes, &covidLpuIds, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidLpuIds", bytes, &covidLpuIds, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidLpuIds, err)
 }
 
+var CovidLpuIdByNameHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+	defer CatchPanic(ctx)
+
+	var lpuId string
+	var validHeader bool
+	var err error
+
+	if ctx.IsPost() == true {
+		err = errors.New("Method POST not supported")
+	} else {
+
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetCovidLpuIdByName", bytes, &lpuId, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	sendModelIfExist(ctx, lpuId, err)
+}
+
 var CovidSpecialityNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidSpecialityNames model.CovidSpecialityNames
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidSpecialityNames", bytes, &covidSpecialityNames, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidSpecialityNames", bytes, &covidSpecialityNames, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidSpecialityNames, err)
@@ -603,16 +639,20 @@ var CovidSpecialityNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.Req
 var CovidSpecialityIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidSpecialityIds model.CovidSpecialityIds
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidSpecialityIds", bytes, &covidSpecialityIds, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidSpecialityIds", bytes, &covidSpecialityIds, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidSpecialityIds, err)
@@ -621,16 +661,20 @@ var CovidSpecialityIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.Reque
 var CovidSpecialityIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidSpecialityId string
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidSpecialityId", bytes, &covidSpecialityId, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidSpecialityId", bytes, &covidSpecialityId, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidSpecialityId, err)
@@ -639,16 +683,20 @@ var CovidSpecialityIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.Reques
 var CovidDocNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidDocNames model.CovidDocNames
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidDocNames", bytes, &covidDocNames, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidDocNames", bytes, &covidDocNames, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidDocNames, err)
@@ -657,16 +705,20 @@ var CovidDocNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 var CovidDocIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidDocIds model.CovidDocIds
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidDocIds", bytes, &covidDocIds, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidDocIds", bytes, &covidDocIds, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidDocIds, err)
@@ -675,16 +727,20 @@ var CovidDocIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 var CovidDocIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidDocId string
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidDocId", bytes, &covidDocId, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidDocId", bytes, &covidDocId, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidDocId, err)
@@ -693,16 +749,20 @@ var CovidDocIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 var CovidAppointmentTimesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidAppointmentTimes model.CovidAppointmentTimes
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidAppointmentTimes", bytes, &covidAppointmentTimes, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidAppointmentTimes", bytes, &covidAppointmentTimes, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidAppointmentTimes, err)
@@ -711,35 +771,21 @@ var CovidAppointmentTimesHandler fasthttp.RequestHandler = func(ctx *fasthttp.Re
 var CovidAppointmentIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
+	var validHeader bool
 	var covidAppointmentIds model.CovidAppointmentIds
 
 	if ctx.IsPost() == true {
 		err = errors.New("Method POST not supported")
 	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidAppointmentIds", bytes, &covidAppointmentIds, 10*time.Minute)
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+			bytes, err := requestContextToBytesArray(rc)
+			if err == nil {
+				err = NatsConnection.Request("GetCovidAppointmentIds", bytes, &covidAppointmentIds, 10*time.Minute)
+			}
 		}
 	}
 	sendModelIfExist(ctx, covidAppointmentIds, err)
-}
-
-var CovidAppointmentCountHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
-	defer CatchPanic(ctx)
-
-	var covidAppointmentCount model.CovidAppointmentCountResponse
-
-	if ctx.IsPost() == true {
-		err = errors.New("Method POST not supported")
-	} else {
-		rc := new(context.RequestContext)
-		rc.New(ctx)
-		bytes, err := requestContextToBytesArray(rc)
-		if err == nil {
-			err = NatsConnection.Request("GetCovidAppointmentCount", bytes, &covidAppointmentCount, 10*time.Minute)
-		}
-	}
-	sendModelIfExist(ctx, covidAppointmentCount, err)
 }
