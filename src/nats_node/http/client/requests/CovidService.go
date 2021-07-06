@@ -1640,8 +1640,44 @@ func GetCovidSpecialityId() {
 	}
 	defer NatsConnection.Close()
 }
-func GetCovidDocNames() {
 
+func getDoctorList(ctx *context.RequestContext) (*soapmodel.SoapDoctorListResponse, error) {
+
+	var response *soapmodel.SoapDoctorListResponse = &soapmodel.SoapDoctorListResponse{}
+
+	err := checkHeader(ctx)
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	_, err = validateParameters(ctx, []string{"idSpeciality", "idLpu"})
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+	pa := soapmodel.SoapDoctorListRequest{
+		IdLpu:        ctx.QueryArgs["idLpu"],
+		IdSpesiality: ctx.QueryArgs["idSpeciality"],
+		Guid:         GUID,
+	}
+
+	if value, found := c.Get(pa.IdLpu + pa.IdSpesiality); found {
+		response = value.(*soapmodel.SoapDoctorListResponse)
+	} else {
+		authorization := ctx.Headers["Authorization"]
+
+		_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDoctorList", authorization, pa, response)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+				c.Set(pa.IdLpu+pa.IdSpesiality, response, 10*time.Minute)
+			}
+		}
+	}
+	return response, err
+}
+
+func GetCovidDocNames() {
 	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidDocNames")
 	if err != nil {
 		logger.Logger.PrintError(err)
@@ -1653,7 +1689,7 @@ func GetCovidDocNames() {
 		if err != nil {
 			logger.Logger.PrintError(err)
 		} else {
-			names := &model.CovidSpecialityNames{
+			names := &model.CovidDocNames{
 				Names: []string{},
 			}
 
@@ -1667,22 +1703,20 @@ func GetCovidDocNames() {
 				logger.Logger.PrintError(err)
 			}
 
-			response, err := getSpecialityList(context)
+			response, err := getDoctorList(context)
 
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
 
-			_, err = validateParameters(context, []string{"idLpu"})
+			_, err = validateParameters(context, []string{"idLpu", "idSpeciality"})
 			if err != nil {
 				logger.Logger.PrintError(err)
 			}
 
-			if response.Body.GetSpesialityListResponse.GetSpesialityListResult.Success == "true" {
-				for _, item := range response.Body.GetSpesialityListResponse.GetSpesialityListResult.ListSpesiality.Spesiality {
-					if item.FerIdSpesiality == "55" {
-						names.Names = append(names.Names, item.NameSpesiality)
-					}
+			if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+				for _, item := range response.Body.GetDoctorListResponse.GetDoctorListResult.Docs.Doctor {
+					names.Names = append(names.Names, item.Name)
 				}
 			}
 			var respBytes []byte
@@ -1699,6 +1733,169 @@ func GetCovidDocNames() {
 	defer NatsConnection.Close()
 
 }
-func GetCovidDocIds()         {}
-func GetCovidDocId()          {}
-func GetCovidAppointmentIds() {}
+
+func GetCovidDocIds() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidDocIds")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			ids := &model.CovidDocIds{
+				Ids: []string{},
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			response, err := getDoctorList(context)
+
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			_, err = validateParameters(context, []string{"idLpu", "idSpeciality"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+				for _, item := range response.Body.GetDoctorListResponse.GetDoctorListResult.Docs.Doctor {
+					ids.Ids = append(ids.Ids, item.IdDoc)
+				}
+			}
+			var respBytes []byte
+			respBytes, err = json.Marshal(ids)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+func GetCovidDocId() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidDocId")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			id := ""
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			response, err := getDoctorList(context)
+
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			_, err = validateParameters(context, []string{"idLpu", "idSpeciality", "docName"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+				for _, item := range response.Body.GetDoctorListResponse.GetDoctorListResult.Docs.Doctor {
+					if item.Name == context.QueryArgs["docName"] {
+						id = item.IdDoc
+					}
+				}
+			}
+			var respBytes []byte
+			respBytes, err = json.Marshal(id)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}
+func GetCovidAppointmentIds() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetCovidAppointmentIds")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			ids := &model.CovidAppointmentIds{
+				Ids: []string{},
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			response, err := getAppointments(context)
+
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			_, err = validateParameters(context, []string{"idLpu", "idDoc"})
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			if response.Body.GetAvaibleAppointmentsResponse.GetAvaibleAppointmentsResult.Success == "true" {
+				for _, item := range response.Body.GetAvaibleAppointmentsResponse.GetAvaibleAppointmentsResult.ListAppointments.Appointment {
+					ids.Ids = append(ids.Ids, item.IdAppointment)
+				}
+			}
+			var respBytes []byte
+			respBytes, err = json.Marshal(ids)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+}

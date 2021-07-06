@@ -734,6 +734,7 @@ var CovidDocNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 	defer CatchPanic(ctx)
 
 	var validHeader bool
+	var validParameter bool
 	var covidDocNames model.CovidDocNames
 
 	if ctx.IsPost() == true {
@@ -741,11 +742,14 @@ var CovidDocNamesHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 	} else {
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 		if validHeader == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err == nil {
-				err = NatsConnection.Request("GetCovidDocNames", bytes, &covidDocNames, 10*time.Minute)
+			validParameter, err = validateParameters(ctx, []string{"idLpu", "idSpeciality"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err == nil {
+					err = NatsConnection.Request("GetCovidDocNames", bytes, &covidDocNames, 10*time.Minute)
+				}
 			}
 		}
 	}
@@ -756,6 +760,7 @@ var CovidDocIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 	defer CatchPanic(ctx)
 
 	var validHeader bool
+	var validParameter bool
 	var covidDocIds model.CovidDocIds
 
 	if ctx.IsPost() == true {
@@ -763,11 +768,14 @@ var CovidDocIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) 
 	} else {
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 		if validHeader == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err == nil {
-				err = NatsConnection.Request("GetCovidDocIds", bytes, &covidDocIds, 10*time.Minute)
+			validParameter, err = validateParameters(ctx, []string{"idLpu", "idSpeciality"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err == nil {
+					err = NatsConnection.Request("GetCovidDocIds", bytes, &covidDocIds, 10*time.Minute)
+				}
 			}
 		}
 	}
@@ -778,6 +786,7 @@ var CovidDocIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
 	var validHeader bool
+	var validParameter bool
 	var covidDocId string
 
 	if ctx.IsPost() == true {
@@ -785,11 +794,14 @@ var CovidDocIdHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	} else {
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 		if validHeader == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err == nil {
-				err = NatsConnection.Request("GetCovidDocId", bytes, &covidDocId, 10*time.Minute)
+			validParameter, err = validateParameters(ctx, []string{"idLpu", "idSpeciality", "docName"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err == nil {
+					err = NatsConnection.Request("GetCovidDocId", bytes, &covidDocId, 10*time.Minute)
+				}
 			}
 		}
 	}
@@ -800,6 +812,7 @@ var CovidAppointmentIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.Requ
 	defer CatchPanic(ctx)
 
 	var validHeader bool
+	var validParameter bool
 	var covidAppointmentIds model.CovidAppointmentIds
 
 	if ctx.IsPost() == true {
@@ -807,11 +820,14 @@ var CovidAppointmentIdsHandler fasthttp.RequestHandler = func(ctx *fasthttp.Requ
 	} else {
 		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
 		if validHeader == true {
-			rc := new(context.RequestContext)
-			rc.New(ctx)
-			bytes, err := requestContextToBytesArray(rc)
-			if err == nil {
-				err = NatsConnection.Request("GetCovidAppointmentIds", bytes, &covidAppointmentIds, 10*time.Minute)
+			validParameter, err = validateParameters(ctx, []string{"idLpu", "idDoc"})
+			if validParameter == true {
+				rc := new(context.RequestContext)
+				rc.New(ctx)
+				bytes, err := requestContextToBytesArray(rc)
+				if err == nil {
+					err = NatsConnection.Request("GetCovidAppointmentIds", bytes, &covidAppointmentIds, 10*time.Minute)
+				}
 			}
 		}
 	}
