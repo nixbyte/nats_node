@@ -696,8 +696,8 @@ func CheckPatient() {
 				soapPat := soapmodel.SoapPatient{
 					Birthday:   time.Unix(person.Birthday, 0).Local().Format("2006-01-02"),
 					Name:       person.Firstname,
-					SecondName: person.Lastname,
-					Surname:    person.Middlename,
+					SecondName: person.Middlename,
+					Surname:    person.Lastname,
 					Snils:      person.Snils,
 					Document_N: person.DocumentN,
 					Document_S: person.DocumentS,
@@ -783,8 +783,8 @@ func AddPatient() {
 				soapPat := soapmodel.SoapPatient{
 					Birthday:   time.Unix(person.Birthday, 0).Local().Format("2006-01-02"),
 					Name:       person.Firstname,
-					SecondName: person.Lastname,
-					Surname:    person.Middlename,
+					SecondName: person.Middlename,
+					Surname:    person.Lastname,
 					Snils:      person.Snils,
 					Document_N: person.DocumentN,
 					Document_S: person.DocumentS,
