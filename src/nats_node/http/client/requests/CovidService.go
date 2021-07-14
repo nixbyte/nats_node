@@ -605,7 +605,7 @@ func GetAppointmentList() {
 					IdDoc:      context.QueryArgs["idDoc"],
 					IdLpu:      context.QueryArgs["idLpu"],
 					VisitStart: time.Now().Format("2006-01-02T15:04:05"),
-					VisitEnd:   time.Now().Format("2006-01-02T15:04:05"),
+					VisitEnd:   time.Now().AddDate(0, 1, 15).Format("2006-01-02T15:04:05"),
 					Guid:       GUID,
 				}
 
