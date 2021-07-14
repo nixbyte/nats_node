@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/nats-io/nats.go"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
 var servers []string
@@ -31,6 +33,11 @@ func init() {
 		logger.Logger.PrintError(err)
 	}
 }
+
+var MfcSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTTPHandler(
+	httpSwagger.Handler(
+		httpSwagger.URL("/mfc.json"),
+	))
 
 var GetAppStateHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)

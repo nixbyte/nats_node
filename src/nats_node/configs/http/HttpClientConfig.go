@@ -22,7 +22,7 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"http://r78-rc.zdrav.netrika.ru",
+		"http://mfcapi.spb.dev",
 		"C4F530D6-E6EC-4C6E-ACE7-231ADFE928CB",
 		60,
 		60,
