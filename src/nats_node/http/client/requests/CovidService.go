@@ -3,6 +3,7 @@ package request
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"nats_node/http/client"
@@ -178,23 +179,23 @@ func GetDistrictList() {
 			var response *soapmodel.SoapDistrictListResponse = &soapmodel.SoapDistrictListResponse{}
 			authorization := context.Headers["Authorization"]
 
-			//if value, found := c.Get("districts"); found {
-			//	response = value.(*soapmodel.SoapDistrictListResponse)
-			//	respBytes, err = xml.Marshal(response)
-			//	if err != nil {
-			//		logger.Logger.PrintError(err)
-			//	}
-			//} else {
-
-			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
-			if err != nil {
-				logger.Logger.PrintError(err)
+			if value, found := c.Get("districts"); found {
+				response = value.(*soapmodel.SoapDistrictListResponse)
+				respBytes, err = xml.Marshal(response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
 			} else {
-				if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
-					c.Set("districts", response, cache.NoExpiration)
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				} else {
+					if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
+						c.Set("districts", response, cache.NoExpiration)
+					}
 				}
 			}
-			//}
 
 			err = msg.Respond(respBytes)
 			if err != nil {
@@ -235,19 +236,19 @@ func GetDistricts() {
 			var response *soapmodel.SoapDistrictListResponse = &soapmodel.SoapDistrictListResponse{}
 			authorization := context.Headers["Authorization"]
 
-			//if value, found := c.Get("districts"); found {
-			//	response = value.(*soapmodel.SoapDistrictListResponse)
-			//} else {
-
-			_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
-			if err != nil {
-				logger.Logger.PrintError(err)
+			if value, found := c.Get("districts"); found {
+				response = value.(*soapmodel.SoapDistrictListResponse)
 			} else {
-				if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
-					c.Set("districts", response, cache.NoExpiration)
+
+				_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				} else {
+					if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
+						c.Set("districts", response, cache.NoExpiration)
+					}
 				}
 			}
-			//}
 
 			districts := response.Body.GetDistrictListResponse.GetDistrictListResult.Districts.District
 			districtStrings := []string{}
@@ -310,23 +311,23 @@ func GetLpuList() {
 				var response *soapmodel.SoapLpuListResponse = &soapmodel.SoapLpuListResponse{}
 				authorization := context.Headers["Authorization"]
 
-				//	if value, found := c.Get(pa.IdDistrict); found {
-				//		response = value.(*soapmodel.SoapLpuListResponse)
-				//		respBytes, err = xml.Marshal(response)
-				//		if err != nil {
-				//			logger.Logger.PrintError(err)
-				//		}
-				//	} else {
-
-				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetLPUList", authorization, pa, response)
-				if err != nil {
-					logger.Logger.PrintError(err)
+				if value, found := c.Get(pa.IdDistrict); found {
+					response = value.(*soapmodel.SoapLpuListResponse)
+					respBytes, err = xml.Marshal(response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					}
 				} else {
-					if response.Body.GetLPUListResponse.GetLPUListResult.Success == "true" {
-						c.Set(pa.IdDistrict, response, cache.DefaultExpiration)
+
+					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetLPUList", authorization, pa, response)
+					if err != nil {
+						logger.Logger.PrintError(err)
+					} else {
+						if response.Body.GetLPUListResponse.GetLPUListResult.Success == "true" {
+							c.Set(pa.IdDistrict, response, cache.DefaultExpiration)
+						}
 					}
 				}
-				//}
 			}
 			err = msg.Respond(respBytes)
 			if err != nil {
@@ -375,30 +376,30 @@ func GetCovidLpuList() {
 			var response *soapmodel.SoapCovidLpuListResponse = &soapmodel.SoapCovidLpuListResponse{}
 			authorization := context.Headers["Authorization"]
 
-			//if value, found := c.Get("lpus"); found {
-			//	response = value.(*soapmodel.SoapCovidLpuListResponse)
-			//	respBytes, err = xml.Marshal(response)
-			//	if err != nil {
-			//		logger.Logger.PrintError(err)
-			//	}
-			//} else {
-
-			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/CovidLpuService.svc", "http://tempuri.org/ICovidLpuService/GetLpus", authorization, pa, response)
-			if err != nil {
-				logger.Logger.PrintError(err)
+			if value, found := c.Get("lpus"); found {
+				response = value.(*soapmodel.SoapCovidLpuListResponse)
+				respBytes, err = xml.Marshal(response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				}
 			} else {
-				if response.Body.GetLpusResponse.GetLpusResult.Success == "true" {
-					lpus := response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu
 
-					for i, item := range lpus {
-						if item.CountOfAvailableCovidAppointments == "0" {
-							response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu = removeEmptyLpus(lpus, i)
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/CovidLpuService.svc", "http://tempuri.org/ICovidLpuService/GetLpus", authorization, pa, response)
+				if err != nil {
+					logger.Logger.PrintError(err)
+				} else {
+					if response.Body.GetLpusResponse.GetLpusResult.Success == "true" {
+						lpus := response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu
+
+						for i, item := range lpus {
+							if item.CountOfAvailableCovidAppointments == "0" {
+								response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu = removeEmptyLpus(lpus, i)
+							}
 						}
+						c.Set("lpus", response, cache.DefaultExpiration)
 					}
-					c.Set("lpus", response, cache.DefaultExpiration)
 				}
 			}
-			//}
 			err = msg.Respond(respBytes)
 			if err != nil {
 				logger.Logger.PrintError(err)
