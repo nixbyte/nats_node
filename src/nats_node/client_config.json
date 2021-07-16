@@ -1,5 +1,8 @@
 {
 	"client_hostname" : "https://special.spbarchives.ru",
+	"client_churl" : "tcp://127.0.0.1:9000?compress=true&debug=true",
+	"client_chdatabase" : "clickhouse",
+	"client_chtablename" : "statistic",
 	"connection_timeout" : 60,
 	"keepalive" : 60,
 	"max_idle_connections" : 65500,

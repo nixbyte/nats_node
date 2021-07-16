@@ -7,7 +7,7 @@ type AppStateResponse struct {
 	Error     int    `json:"error"`
 }
 
-type BranchesResponse struct {
+type MfcListResponse struct {
 	BranchList []struct {
 		AddressState   interface{} `json:"addressState"`
 		Phone          string      `json:"phone"`
@@ -30,7 +30,7 @@ type BranchesResponse struct {
 	} `json:"branchList"`
 }
 
-type BranchServiceResponse struct {
+type MfcServicesResponse struct {
 	ServiceList []struct {
 		AdditionalCustomerDuration int    `json:"additionalCustomerDuration"`
 		Duration                   int    `json:"duration"`
@@ -58,6 +58,13 @@ type ReserveRequest struct {
 
 type ServiceId struct {
 	PublicID string `json:"publicId"`
+}
+
+type ReservationRequestData struct {
+	Branch    string `json:"branch"`
+	ServiceId string `json:"serviceId"`
+	Date      string `json:"date"`
+	Time      string `json:"time"`
 }
 
 type ReserveResponse struct {

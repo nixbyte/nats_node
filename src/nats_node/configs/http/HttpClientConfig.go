@@ -10,6 +10,9 @@ import (
 
 type ClientConfig struct {
 	DefaultHostName       string `json:"client_hostname"`
+	ClientCHUrl           string `json:"client_churl"`
+	ClientCHDatabase      string `json:"client_chdatabase"`
+	ClientCHTableName     string `json:"client_chtablename"`
 	Guid                  string `json:"guid"`
 	DealerConnectTimeout  int    `json:"connection_timeout"`
 	DealerKeepAlive       int    `json:"keepalive"`
@@ -22,7 +25,10 @@ type ClientConfig struct {
 
 func SetDefaultClientConfig() *ClientConfig {
 	config := &ClientConfig{
-		"http://r78-rc.zdrav.netrika.ru",
+		"http://localhost:8080",
+		"tcp://127.0.0.1:9000?compress=true&debug=true",
+		"clickhouse",
+		"statistic",
 		"C4F530D6-E6EC-4C6E-ACE7-231ADFE928CB",
 		60,
 		60,

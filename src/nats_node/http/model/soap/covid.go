@@ -11,6 +11,13 @@ type SoapDistrictListResponse struct {
 	Body struct {
 		GetDistrictListResponse struct {
 			GetDistrictListResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Success   string `xml:"Success"`
 				Districts struct {
 					District []District `xml:"District"`
@@ -36,6 +43,13 @@ type SoapLpuListResponse struct {
 	Body struct {
 		GetLPUListResponse struct {
 			GetLPUListResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Success string `xml:"Success"`
 				ListLPU struct {
 					Clinic []struct {
@@ -71,6 +85,13 @@ type SoapCovidLpuListResponse struct {
 	Body struct {
 		GetLpusResponse struct {
 			GetLpusResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Lpus struct {
 					Lpu []Lpu `xml:"Lpu"`
 				} `xml:"Lpus"`
@@ -111,6 +132,13 @@ type SoapSpecialityListResponse struct {
 	Body struct {
 		GetSpesialityListResponse struct {
 			GetSpesialityListResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Success        string `xml:"Success"`
 				ListSpesiality struct {
 					Spesiality []struct {
@@ -140,6 +168,13 @@ type SoapDoctorListResponse struct {
 	Body struct {
 		GetDoctorListResponse struct {
 			GetDoctorListResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Success string `xml:"Success"`
 				Docs    struct {
 					Doctor []struct {
@@ -171,6 +206,13 @@ type SoapAppointmentListResponse struct {
 	Body struct {
 		GetAvaibleAppointmentsResponse struct {
 			GetAvaibleAppointmentsResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
 				Success          string `xml:"Success"`
 				ListAppointments struct {
 					Appointment []struct {
@@ -316,8 +358,11 @@ type SoapDeleteAppointmentResponse struct {
 		CreateClaimForRefusalResponse struct {
 			CreateClaimForRefusalResult struct {
 				ErrorList struct {
-					Text string `xml:",chardata"`
-					Nil  string `xml:"nil,attr"`
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
 				} `xml:"ErrorList"`
 				Success string `xml:"Success"`
 			} `xml:"CreateClaimForRefusalResult"`

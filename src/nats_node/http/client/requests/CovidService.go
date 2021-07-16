@@ -461,24 +461,24 @@ func GetSpecialityList() {
 				var response *soapmodel.SoapSpecialityListResponse = &soapmodel.SoapSpecialityListResponse{}
 				authorization := context.Headers["Authorization"]
 
-				if value, found := c.Get(pa.IdLpu); found {
-					response = value.(*soapmodel.SoapSpecialityListResponse)
-					respBytes, err = xml.Marshal(response)
-					if err != nil {
-						logger.Logger.PrintError(err)
-					}
+				//if value, found := c.Get(pa.IdLpu); found {
+				//	response = value.(*soapmodel.SoapSpecialityListResponse)
+				//	respBytes, err = xml.Marshal(response)
+				//	if err != nil {
+				//		logger.Logger.PrintError(err)
+				//	}
+				//} else {
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetSpesialityList", authorization, pa, response)
+
+				if err != nil {
+					logger.Logger.PrintError(err)
 				} else {
-
-					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetSpesialityList", authorization, pa, response)
-
-					if err != nil {
-						logger.Logger.PrintError(err)
-					} else {
-						if response.Body.GetSpesialityListResponse.GetSpesialityListResult.Success == "true" {
-							c.Set(pa.IdLpu, response, cache.DefaultExpiration)
-						}
+					if response.Body.GetSpesialityListResponse.GetSpesialityListResult.Success == "true" {
+						c.Set(pa.IdLpu, response, cache.DefaultExpiration)
 					}
 				}
+				//}
 			}
 			err = msg.Respond(respBytes)
 			if err != nil {
@@ -536,24 +536,24 @@ func GetDoctorList() {
 				var response *soapmodel.SoapDoctorListResponse = &soapmodel.SoapDoctorListResponse{}
 				authorization := context.Headers["Authorization"]
 
-				if value, found := c.Get(pa.IdLpu + pa.IdSpesiality); found {
-					response = value.(*soapmodel.SoapDoctorListResponse)
-					respBytes, err = xml.Marshal(response)
-					if err != nil {
-						logger.Logger.PrintError(err)
-					}
+				//if value, found := c.Get(pa.IdLpu + pa.IdSpesiality); found {
+				//	response = value.(*soapmodel.SoapDoctorListResponse)
+				//	respBytes, err = xml.Marshal(response)
+				//	if err != nil {
+				//		logger.Logger.PrintError(err)
+				//	}
+				//} else {
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDoctorList", authorization, pa, response)
+
+				if err != nil {
+					logger.Logger.PrintError(err)
 				} else {
-
-					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDoctorList", authorization, pa, response)
-
-					if err != nil {
-						logger.Logger.PrintError(err)
-					} else {
-						if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
-							c.Set(pa.IdLpu+pa.IdSpesiality, response, 10*time.Minute)
-						}
+					if response.Body.GetDoctorListResponse.GetDoctorListResult.Success == "true" {
+						c.Set(pa.IdLpu+pa.IdSpesiality, response, 10*time.Minute)
 					}
 				}
+				//	}
 			}
 			err = msg.Respond(respBytes)
 			if err != nil {
@@ -606,31 +606,31 @@ func GetAppointmentList() {
 					IdDoc:      context.QueryArgs["idDoc"],
 					IdLpu:      context.QueryArgs["idLpu"],
 					VisitStart: time.Now().Format("2006-01-02T15:04:05"),
-					VisitEnd:   time.Now().Format("2006-01-02T15:04:05"),
+					VisitEnd:   time.Now().AddDate(0, 1, 15).Format("2006-01-02T15:04:05"),
 					Guid:       GUID,
 				}
 
 				var response *soapmodel.SoapAppointmentListResponse = &soapmodel.SoapAppointmentListResponse{}
 				authorization := context.Headers["Authorization"]
 
-				if value, found := c.Get(pa.IdDoc + pa.IdLpu); found {
-					response = value.(*soapmodel.SoapAppointmentListResponse)
-					respBytes, err = xml.Marshal(response)
-					if err != nil {
-						logger.Logger.PrintError(err)
-					}
+				//if value, found := c.Get(pa.IdDoc + pa.IdLpu); found {
+				//	response = value.(*soapmodel.SoapAppointmentListResponse)
+				//	respBytes, err = xml.Marshal(response)
+				//	if err != nil {
+				//		logger.Logger.PrintError(err)
+				//	}
+				//} else {
+
+				respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetAvaibleAppointments", authorization, pa, response)
+
+				if err != nil {
+					logger.Logger.PrintError(err)
 				} else {
-
-					respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetAvaibleAppointments", authorization, pa, response)
-
-					if err != nil {
-						logger.Logger.PrintError(err)
-					} else {
-						if response.Body.GetAvaibleAppointmentsResponse.GetAvaibleAppointmentsResult.Success == "true" {
-							c.Set(pa.IdDoc+pa.IdLpu, response, 1*time.Hour)
-						}
+					if response.Body.GetAvaibleAppointmentsResponse.GetAvaibleAppointmentsResult.Success == "true" {
+						c.Set(pa.IdDoc+pa.IdLpu, response, 1*time.Hour)
 					}
 				}
+				//}
 			}
 			err = msg.Respond(respBytes)
 			if err != nil {
@@ -695,10 +695,10 @@ func CheckPatient() {
 			if validPatient == true {
 
 				soapPat := soapmodel.SoapPatient{
-					Birthday:   time.Unix(person.Birthday, 0).UTC().Format("2006-01-02T15:04:05"),
+					Birthday:   time.Unix(person.Birthday, 0).Local().Format("2006-01-02"),
 					Name:       person.Firstname,
-					SecondName: person.Lastname,
-					Surname:    person.Middlename,
+					SecondName: person.Middlename,
+					Surname:    person.Lastname,
 					Snils:      person.Snils,
 					Document_N: person.DocumentN,
 					Document_S: person.DocumentS,
@@ -782,17 +782,16 @@ func AddPatient() {
 			if validPatient == true {
 
 				soapPat := soapmodel.SoapPatient{
-					Birthday:   time.Unix(person.Birthday, 0).UTC().Format("2006-01-02T15:04:05"),
+					Birthday:   time.Unix(person.Birthday, 0).Local().Format("2006-01-02"),
 					Name:       person.Firstname,
-					SecondName: person.Lastname,
-					Surname:    person.Middlename,
+					SecondName: person.Middlename,
+					Surname:    person.Lastname,
 					Snils:      person.Snils,
 					Document_N: person.DocumentN,
 					Document_S: person.DocumentS,
 					Polis_N:    person.PolisN,
 					Polis_S:    person.PolisS,
 					CellPhone:  person.Phone,
-					HomePhone:  person.Phone,
 				}
 
 				pa := soapmodel.SoapAddPatientRequest{
@@ -1103,18 +1102,18 @@ func getDistrictList(ctx *context.RequestContext) (*soapmodel.SoapDistrictListRe
 
 		authorization := ctx.Headers["Authorization"]
 
-		if value, found := c.Get("districts"); found {
-			response = value.(*soapmodel.SoapDistrictListResponse)
+		//if value, found := c.Get("districts"); found {
+		//	response = value.(*soapmodel.SoapDistrictListResponse)
+		//} else {
+		_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
+		if err != nil {
+			logger.Logger.PrintError(err)
 		} else {
-			_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetDistrictList", authorization, pa, response)
-			if err != nil {
-				logger.Logger.PrintError(err)
-			} else {
-				if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
-					c.Set("districts", response, cache.NoExpiration)
-				}
+			if response.Body.GetDistrictListResponse.GetDistrictListResult.Success == "true" {
+				c.Set("districts", response, cache.NoExpiration)
 			}
 		}
+		//}
 	}
 	return response, err
 }
@@ -1132,27 +1131,27 @@ func getCovidLpuList(ctx *context.RequestContext) (*soapmodel.SoapCovidLpuListRe
 
 	authorization := ctx.Headers["Authorization"]
 
-	if value, found := c.Get("lpus"); found {
-		response = value.(*soapmodel.SoapCovidLpuListResponse)
+	//if value, found := c.Get("lpus"); found {
+	//	response = value.(*soapmodel.SoapCovidLpuListResponse)
+	//} else {
+
+	_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/CovidLpuService.svc", "http://tempuri.org/ICovidLpuService/GetLpus", authorization, pa, response)
+	if err != nil {
+		logger.Logger.PrintError(err)
 	} else {
+		if response.Body.GetLpusResponse.GetLpusResult.Success == "true" {
+			lpus := response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu
 
-		_, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/CovidLpuService.svc", "http://tempuri.org/ICovidLpuService/GetLpus", authorization, pa, response)
-		if err != nil {
-			logger.Logger.PrintError(err)
-		} else {
-			if response.Body.GetLpusResponse.GetLpusResult.Success == "true" {
-				lpus := response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu
-
-				for i, item := range lpus {
-					if item.CountOfAvailableCovidAppointments == "0" {
-						fmt.Println("remove")
-						response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu = removeEmptyLpus(lpus, i)
-					}
+			for i, item := range lpus {
+				if item.CountOfAvailableCovidAppointments == "0" {
+					fmt.Println("remove")
+					response.Body.GetLpusResponse.GetLpusResult.Lpus.Lpu = removeEmptyLpus(lpus, i)
 				}
-				c.Set("lpus", response, cache.DefaultExpiration)
 			}
+			c.Set("lpus", response, cache.DefaultExpiration)
 		}
 	}
+	//}
 
 	return response, err
 }
