@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	model "nats_node/http/model/json"
 	context "nats_node/nats/model"
 	"nats_node/utils/logger"
 	"time"
@@ -20,7 +19,7 @@ var StatisticSwaggerHandler fasthttp.RequestHandler = fasthttpadaptor.NewFastHTT
 var StatisticSendHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 
-	var token model.Token
+	var timeStamp []byte
 
 	if ctx.IsGet() == true {
 		err = errors.New("method GET not supported")
@@ -33,11 +32,11 @@ var StatisticSendHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx
 		if err != nil {
 			logger.Logger.PrintError(err)
 		}
-		err = NatsConnection.Request("KomsportStatistic", bytes, &token, 10*time.Minute)
+		err = NatsConnection.Request("KomsportStatistic", bytes, &timeStamp, 10*time.Minute)
 		if err != nil {
 			logger.Logger.PrintError(err)
 		}
 
 	}
-	sendModelIfExist(ctx, token, err)
+	sendModelIfExist(ctx, string(timeStamp), err)
 }

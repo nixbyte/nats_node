@@ -3,10 +3,9 @@ package request
 import (
 	"encoding/json"
 	"fmt"
-	"komsport/http/model"
-	"komsport/utils/logger"
+	model "nats_node/http/model/json"
+	"nats_node/utils/logger"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go"
@@ -17,9 +16,6 @@ import (
 var (
 	LvlDB        *leveldb.DB
 	ChConnection *sqlx.DB
-	err          error
-	Mutex        sync.Mutex
-	Condition    *sync.Cond
 )
 
 func init() {
@@ -43,7 +39,7 @@ func init() {
 		return
 	}
 
-	_, err := ChConnection.Exec(`
+	_, err = ChConnection.Exec(`
 			CREATE TABLE IF NOT EXISTS clickhouse.statistic (
 				  Date Date DEFAULT toDate(DT),
 				  DT DateTime('Europe/Moscow'),
@@ -84,40 +80,73 @@ func init() {
 }
 
 func SendKomsportStatistic() {
-	var b []byte //getFromNats
-	var m *model.Model = &model.Model{}
-	err := json.Unmarshal(b, m)
+
+	sub, err := NatsConnection.Conn.SubscribeSync("KomsportStatistic")
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
 
-	batch := new(leveldb.Batch)
-	timeInBytes := []byte(strconv.Itoa(time.Now().Nanosecond()))
-	batch.Put(timeInBytes, b)
+	var timeInBytes []byte
 
-	err = LvlDB.Write(batch, nil)
-	if err != nil {
-		logger.Logger.PrintError(err)
+	for {
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			var m *model.KomsportModel = &model.KomsportModel{}
+			err = json.Unmarshal(context.Body, m)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			batch := new(leveldb.Batch)
+			timeInBytes = []byte(strconv.Itoa(time.Now().Nanosecond()))
+			batch.Put(timeInBytes, context.Body)
+
+			err = LvlDB.Write(batch, nil)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+
+		err = msg.Respond(timeInBytes)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		}
 	}
+	defer NatsConnection.Close()
 }
 
 func InsertIntoClickHouse() {
-	for range time.Tick(time.Second * 30) {
-		entities := make([]model.Model, 0)
+	for range time.Tick(time.Second * 5) {
+		entities := make([]model.KomsportModel, 0)
 		batch := &leveldb.Batch{}
 
 		iter := LvlDB.NewIterator(nil, nil)
 		for iter.Next() {
-			var m model.Model
-			err = json.Unmarshal(iter.Value(), &m)
+			m := &model.KomsportModel{}
+			fmt.Println(string(iter.Value()))
+			err = json.Unmarshal(iter.Value(), m)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			} else {
-				entities = append(entities, m)
+				entities = append(entities, *m)
 				batch.Delete(iter.Key())
 			}
 		}
 
+		fmt.Println(entities)
 		err = statisticInsert(entities)
 		if err == nil {
 			err = LvlDB.Write(batch, nil)
@@ -128,7 +157,7 @@ func InsertIntoClickHouse() {
 	}
 }
 
-func statisticInsert(entities []model.Model) error {
+func statisticInsert(entities []model.KomsportModel) error {
 	tx, err := ChConnection.Begin()
 	if nil != err {
 		return err
