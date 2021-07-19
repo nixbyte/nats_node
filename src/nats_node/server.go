@@ -26,7 +26,12 @@ func main() {
 	server.ApiServer.GetRouter().GET("/GetTest", handlers.GetTestHandler)
 	server.ApiServer.GetRouter().POST("/PostTest", handlers.PostTestHandler)
 
-	//	server.ApiServer.GetRouter().GET("/mfc/swagger/{filename*}", handlers.MfcSwaggerHandler)
+	server.ApiServer.GetRouter().GET("/mfc/swagger/{filename*}", handlers.MfcSwaggerHandler)
+	server.ApiServer.GetRouter().GET("/ourspb/swagger/{filename*}", handlers.OurSpbSwaggerHandler)
+	server.ApiServer.GetRouter().GET("/health/swagger/{filename*}", handlers.CovidSwaggerHandler)
+	server.ApiServer.GetRouter().GET("/medal/swagger/{filename*}", handlers.MedalSwaggerHandler)
+	server.ApiServer.GetRouter().GET("/statistic/swagger/{filename*}", handlers.StatisticSwaggerHandler)
+
 	//	server.ApiServer.GetRouter().GET("/mfc/GetAppState", handlers.GetAppStateHandler)
 	//	server.ApiServer.GetRouter().GET("/mfc/GetMfcList", handlers.BranchesHandler)
 	//	server.ApiServer.GetRouter().GET("/mfc/GetMfcServices", handlers.BranchServiceHandler)
@@ -40,14 +45,11 @@ func main() {
 	//  server.ApiServer.GetRouter().GET("/medal/GetPersonsCountByName", handlers.GetPersonsCountByNameHandler)
 	//	server.ApiServer.GetRouter().GET("/medal/SearchPerson", handlers.SearchPersonHandler)
 	//	server.ApiServer.GetRouter().GET("/medal/GetAllStory", handlers.GetAllStoryHandler)
-	//	server.ApiServer.GetRouter().GET("/medal/swagger/{filename*}", handlers.MedalSwaggerHandler)
 
-	//  server.ApiServer.GetRouter().GET("/ourspb/swagger/{filename*}", handlers.OurSpbSwaggerHandler)
 	//  server.ApiServer.GetRouter().POST("/ourspb/GetAllProblems", handlers.GetAllProblemsHandler)
 	//  server.ApiServer.GetRouter().GET("/ourspb/GetProblem", handlers.GetProblemHandler)
 	//  server.ApiServer.GetRouter().POST("/ourspb/GetFile", handlers.GetFileHandler)
 
-	//server.ApiServer.GetRouter().GET("/health/swagger/{filename*}", handlers.CovidSwaggerHandler)
 	//server.ApiServer.GetRouter().GET("/health/GetToken", handlers.TokenHandler)
 	//server.ApiServer.GetRouter().GET("/health/CheckToken", handlers.TokenExpirationHandler)
 	//server.ApiServer.GetRouter().GET("/health/GetDistrictList", handlers.DistrictListHandler)
@@ -75,7 +77,6 @@ func main() {
 	//server.ApiServer.GetRouter().GET("/health/GetAppointmentIds", handlers.CovidAppointmentIdsHandler)
 	//server.ApiServer.GetRouter().GET("/health/GetAppointmentCount", handlers.CovidAppointmentCountHandler)
 
-	server.ApiServer.GetRouter().GET("/statistic/swagger/{filename*}", handlers.StatisticSwaggerHandler)
 	server.ApiServer.GetRouter().POST("/statistic/send", handlers.StatisticSendHandler)
 
 	if monitoring.Monitoring.WRITE_METRICS {

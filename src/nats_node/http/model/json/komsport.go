@@ -1,6 +1,6 @@
 package model
 
-type KomsportModel struct {
+type StatisticModel struct {
 	Firstname             string `json:"firstname"`
 	Lastname              string `json:"lastname"`
 	Middlename            string `json:"middlename"`
