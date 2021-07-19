@@ -129,7 +129,7 @@ func SendKomsportStatistic() {
 }
 
 func InsertIntoClickHouse() {
-	for range time.Tick(time.Second * 5) {
+	for range time.Tick(time.Second * 30) {
 		entities := make([]model.StatisticModel, 0)
 		batch := &leveldb.Batch{}
 
