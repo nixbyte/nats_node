@@ -1,0 +1,17 @@
+[Unit]
+Description=MFC SERVICE API
+After=network.target
+
+[Service]
+Environment=LOGXI=*
+User=root
+LimitNOFILE=1048576
+WorkingDirectory=/opt/mfc/
+ExecStart=/opt/mfc
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
+

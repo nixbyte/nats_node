@@ -26,7 +26,7 @@ func init() {
 		logger.Logger.PrintError(err)
 	}
 
-	ChConnection, err = sqlx.Open("clickhouse", "tcp://127.0.0.1:9000?compress=truedebug=true")
+	ChConnection, err = sqlx.Open("clickhouse", "tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&database=db1")
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
@@ -40,7 +40,7 @@ func init() {
 	}
 
 	_, err = ChConnection.Exec(`
-			CREATE TABLE IF NOT EXISTS clickhouse.statistic (
+			CREATE TABLE IF NOT EXISTS db1.statistic (
 				  Date Date DEFAULT toDate(DT),
 				  DT DateTime('Europe/Moscow'),
 				  EventDate Date DEFAULT toDate(EventTime),

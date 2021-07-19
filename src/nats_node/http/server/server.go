@@ -38,7 +38,7 @@ func newRouter() *apiRouter {
 }
 
 func init() {
-	fmt.Println("Init Servers...")
+	fmt.Println("Init Server...")
 
 	NatsHttpServersConfig = configs.SetDefaultNatsNodeHttpServerConfig()
 

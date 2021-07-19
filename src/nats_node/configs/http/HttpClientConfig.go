@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-type ClientConfig struct {
+type NatsNodeHttpClientConfig struct {
 	DefaultHostName       string `json:"client_hostname"`
 	ClientCHUrl           string `json:"client_churl"`
 	ClientCHDatabase      string `json:"client_chdatabase"`
@@ -23,11 +23,15 @@ type ClientConfig struct {
 	Timeout               int    `json:"timeout"`
 }
 
-func SetDefaultClientConfig() *ClientConfig {
-	config := &ClientConfig{
+func (clientConfig *NatsNodeHttpClientConfig) String() string {
+	return fmt.Sprintf("{\n    client_hostname : %s,\n    client_churl : %s,\n    client_chdatabase : %s,\n    client_chtablename : %s,\n    guid : %s,\n    connection_timeout : %d,\n    keepalive : %d,\n    max_idle_connections : %d,\n   max_idle_conns_per_host : %d,\n    tls_handshake_timeout : %d,\n    response_header_timeout : %d,\n    timeout : %d\n  }\n", clientConfig.DefaultHostName, clientConfig.ClientCHUrl, clientConfig.ClientCHDatabase, clientConfig.ClientCHTableName, clientConfig.Guid, clientConfig.DealerConnectTimeout, clientConfig.DealerKeepAlive, clientConfig.MaxIdleConns, clientConfig.MaxIdleConnsPerHost, clientConfig.TLSHandshakeTimeout, clientConfig.ResponseHeaderTimeout, clientConfig.Timeout)
+}
+
+func SetDefaultClientConfig() *NatsNodeHttpClientConfig {
+	config := &NatsNodeHttpClientConfig{
 		"http://localhost:8080",
-		"tcp://127.0.0.1:9000?compress=true&debug=true",
-		"clickhouse",
+		"tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&database=db1",
+		"db1",
 		"statistic",
 		"C4F530D6-E6EC-4C6E-ACE7-231ADFE928CB",
 		60,
@@ -43,19 +47,23 @@ func SetDefaultClientConfig() *ClientConfig {
 
 	if isSet && value != "" {
 
-		fileName := value + "/client_config.json"
+		fileName := value + "/nats_http_client_config.json"
 		configFile, err := ioutil.ReadFile(fileName)
 		if err != nil {
 			logger.Logger.PrintWarn(err.Error())
 		} else {
-			json.Unmarshal(configFile, &config)
+			err := json.Unmarshal(configFile, config)
+			if err != nil {
+				logger.Logger.PrintWarn(err.Error())
+			}
 		}
 	} else {
 		logger.Logger.PrintWarn("Client config environment variable not set")
 		logger.Logger.PrintWarn("Using default config")
 	}
 
-	fmt.Println("Client config")
-	fmt.Println(config)
+	fmt.Println("Nats http client config")
+	fmt.Printf("Config - %v", config)
+
 	return config
 }

@@ -18,7 +18,7 @@ func sendSignRequest(env jsonmodel.SoapEnvelope) ([]byte, error) {
 
 	envelopeRequest := env.GetSoapEnvelopeRequest()
 
-	signServiceConfig := &configs.ClientConfig{
+	signServiceConfig := &configs.NatsNodeHttpClientConfig{
 		"http://localhost:8181",
 		"",
 		"",

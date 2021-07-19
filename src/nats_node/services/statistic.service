@@ -1,0 +1,19 @@
+
+[Unit]
+Description=KOMSPORT STATISTIC SERVICE API
+After=network.target
+
+[Service]
+Environment=LOGXI=*
+Environment=SERVER_CONFIG_PATH=/opt/statistic/
+User=root
+LimitNOFILE=1048576
+WorkingDirectory=/opt/statistic/
+ExecStart=/opt/statistic
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
+

@@ -75,12 +75,12 @@ func SetDefaultNatsNodeHttpServerConfig() *NatsNodeHttpServersConfig {
 		} else {
 			err := json.Unmarshal(configFile, config)
 			if err != nil {
-				fmt.Println(err)
+				logger.Logger.PrintWarn(err.Error())
 			}
 		}
 	} else {
-		fmt.Println("Nats http Servers config environment variable ELK_CONFIG_PATH not set")
-		fmt.Println("Apply default config")
+		logger.Logger.PrintWarn("Nats HTTP Servers Config environment variable ELK_CONFIG_PATH not set")
+		logger.Logger.PrintWarn("Nats HTTP Servers using default config")
 	}
 
 	fmt.Println("Nats http servers config")

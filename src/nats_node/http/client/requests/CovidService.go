@@ -25,11 +25,9 @@ var c *cache.Cache
 func init() {
 	c = cache.New(12*time.Hour, 24*time.Hour)
 	GUID = client.Client.Config.Guid
-	fmt.Println("Init Covid Service")
 }
 
 func checkHeader(ctx *context.RequestContext) error {
-
 	authorization := []byte(ctx.Headers["Authorization"])
 
 	if len(authorization) == 0 {

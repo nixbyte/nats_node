@@ -27,7 +27,7 @@ var (
 
 type HttpWorker struct {
 	HttpClient *http.Client
-	Config     *configs.ClientConfig
+	Config     *configs.NatsNodeHttpClientConfig
 }
 
 type RequestType int
@@ -297,7 +297,7 @@ func NewRequest() *HttpRequest {
 	return &HttpRequest{0, "", "", make(map[string]string), url.Values{}, &bytes.Reader{}, make(map[string]interface{})}
 }
 
-func SetWorker(config *configs.ClientConfig) *HttpWorker {
+func SetWorker(config *configs.NatsNodeHttpClientConfig) *HttpWorker {
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   time.Duration(config.DealerConnectTimeout) * time.Second,
@@ -320,7 +320,7 @@ func SetWorker(config *configs.ClientConfig) *HttpWorker {
 	return Client
 }
 
-func NewWorker(config *configs.ClientConfig) *HttpWorker {
+func NewWorker(config *configs.NatsNodeHttpClientConfig) *HttpWorker {
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   time.Duration(config.DealerConnectTimeout) * time.Second,
