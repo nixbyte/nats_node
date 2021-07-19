@@ -76,6 +76,7 @@ func main() {
 	//server.ApiServer.GetRouter().GET("/health/GetAppointmentTimes", handlers.CovidAppointmentTimesHandler)
 	//server.ApiServer.GetRouter().GET("/health/GetAppointmentIds", handlers.CovidAppointmentIdsHandler)
 	//server.ApiServer.GetRouter().GET("/health/GetAppointmentCount", handlers.CovidAppointmentCountHandler)
+	server.ApiServer.GetRouter().POST("/health/GetPatientHistory", handlers.GetPatientHistoryHandler)
 
 	server.ApiServer.GetRouter().POST("/statistic/send", handlers.StatisticSendHandler)
 

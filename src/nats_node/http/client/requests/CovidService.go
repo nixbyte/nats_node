@@ -817,6 +817,63 @@ func AddPatient() {
 
 }
 
+func GetPatientHistory() {
+	sub, err := NatsConnection.Conn.SubscribeSync("GetPatientHistory")
+	if err != nil {
+		logger.Logger.PrintError(err)
+	}
+
+	for {
+		// Wait for a message
+		msg, err := sub.NextMsg(10 * time.Minute)
+		if err != nil {
+			logger.Logger.PrintError(err)
+		} else {
+			var respBytes []byte
+			var response *soapmodel.SoapGetPatientHistoryResponse = &soapmodel.SoapGetPatientHistoryResponse{}
+			var personHistory *model.PatientHistory = &model.PatientHistory{
+				IdLpu:     "",
+				IdPat:     "",
+				IdHistory: 0,
+			}
+
+			requestBytes, err := GetBytesFromNatsBase64Msg(msg.Data)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			context, err := GetRequestContextFromBytesArray(requestBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			err = json.Unmarshal(context.Body, personHistory)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			pa := soapmodel.SoapGetPatientHistoryRequest{
+				IdLpu: personHistory.IdLpu,
+				IdPat: personHistory.IdPat,
+				Guid:  GUID,
+			}
+
+			authorization := context.Headers["Authorization"]
+
+			respBytes, err = client.SoapCallHandleResponse("http://r78-rc.zdrav.netrika.ru/hub25/HubService.svc", "http://tempuri.org/IHubService/GetPatientHistory", authorization, pa, response)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = msg.Respond(respBytes)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	defer NatsConnection.Close()
+
+}
+
 func UpdatePhone() {
 	sub, err := NatsConnection.Conn.SubscribeSync("UpdatePhone")
 	if err != nil {
