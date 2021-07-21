@@ -406,6 +406,45 @@ var AddPatientHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	sendModelIfExist(ctx, patientResponse, err)
 }
 
+var GetPatientHistoryHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
+	defer CatchPanic(ctx)
+
+	var state string
+	var personHistory *model.PatientHistory = &model.PatientHistory{}
+	var patientHistoryResponse soapmodel.SoapGetPatientHistoryResponse
+	var validHeader bool
+	var err error
+
+	if ctx.IsGet() == true {
+		err = errors.New("Method GET not supported")
+	} else {
+		validHeader, err = validateHeaders(ctx, []string{"Authorization"})
+		if validHeader == true {
+			rc := new(context.RequestContext)
+			rc.New(ctx)
+
+			err = json.Unmarshal(rc.Body, personHistory)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+
+			bytes, err := requestContextToBytesArray(rc)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = NatsConnection.Request("GetPatientHistory", bytes, &state, 10*time.Minute)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+			err = xml.Unmarshal([]byte(state), &patientHistoryResponse)
+			if err != nil {
+				logger.Logger.PrintError(err)
+			}
+		}
+	}
+	sendModelIfExist(ctx, patientHistoryResponse, err)
+}
+
 var UpdatePhoneHandler fasthttp.RequestHandler = func(ctx *fasthttp.RequestCtx) {
 	defer CatchPanic(ctx)
 

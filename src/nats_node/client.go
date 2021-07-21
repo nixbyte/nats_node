@@ -73,6 +73,7 @@ func main() {
 	//go request.GetCovidAppointmentTimes()
 	//go request.GetCovidAppointmentIds()
 	//go request.GetCovidAppointmentCount()
+	//go request.GetPatientHistory()
 	go request.SendKomsportStatistic()
 	select {}
 }

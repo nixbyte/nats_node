@@ -17,6 +17,12 @@ type TokenExpiration struct {
 	} `json:"content"`
 }
 
+type PatientHistory struct {
+	IdLpu     string `json:"idLpu"`
+	IdPat     string `json:"idPat"`
+	IdHistory int32  `json:"idHistory"`
+}
+
 type Patient struct {
 	Firstname     string `json:"firstname"`
 	Lastname      string `json:"lastname"`

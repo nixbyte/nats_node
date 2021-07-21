@@ -230,6 +230,156 @@ type SoapAppointmentListResponse struct {
 	} `xml:"Body"`
 }
 
+type SoapGetPatientHistoryRequest struct {
+	XMLName   xml.Name `xml:"tem:GetPatientHistory"`
+	IdLpu     string   `xml:"tem:idLpu"`
+	IdPat     string   `xml:"tem:idPat"`
+	Guid      string   `xml:"tem:guid"`
+	IdHistory int32    `xml:"tem:idHistory"`
+}
+
+type SoapGetPatientHistoryResponse struct {
+	Body struct {
+		GetPatientHistoryResponse struct {
+			GetPatientHistoryResult struct {
+				ErrorList struct {
+					Error struct {
+						Text             string `xml:",chardata"`
+						ErrorDescription string `xml:"ErrorDescription"`
+						IdError          string `xml:"IdError"`
+					} `xml:"Error"`
+				} `xml:"ErrorList"`
+				IdHistory          string `xml:IdHistory`
+				Success            string `xml:"Success"`
+				ListHistoryRefusal struct {
+					Text           string `xml:",chardata"`
+					HistoryRefusal []struct {
+						Text                   string `xml:",chardata"`
+						DateCreatedAppointment string `xml:"DateCreatedAppointment"`
+						DoctorBringReferal     struct {
+							Text string `xml:",chardata"`
+							Nil  string `xml:"nil,attr"`
+						} `xml:"DoctorBringReferal"`
+						DoctorRendingConsultation struct {
+							Text       string `xml:",chardata"`
+							AriaNumber string `xml:"AriaNumber"`
+							Comment    struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"Comment"`
+							CountFreeParticipantIE string `xml:"CountFreeParticipantIE"`
+							CountFreeTicket        string `xml:"CountFreeTicket"`
+							IdDoc                  string `xml:"IdDoc"`
+							LastDate               struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"LastDate"`
+							Name        string `xml:"Name"`
+							NearestDate struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"NearestDate"`
+							Snils struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"Snils"`
+						} `xml:"DoctorRendingConsultation"`
+						IdAppointment          string `xml:"IdAppointment"`
+						SpecialityBringReferal struct {
+							Text string `xml:",chardata"`
+							Nil  string `xml:"nil,attr"`
+						} `xml:"SpecialityBringReferal"`
+						SpecialityRendingConsultation struct {
+							Text                   string `xml:",chardata"`
+							CountFreeParticipantIE string `xml:"CountFreeParticipantIE"`
+							CountFreeTicket        string `xml:"CountFreeTicket"`
+							FerIdSpesiality        string `xml:"FerIdSpesiality"`
+							IdSpesiality           string `xml:"IdSpesiality"`
+							LastDate               struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"LastDate"`
+							NameSpesiality string `xml:"NameSpesiality"`
+							NearestDate    struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"NearestDate"`
+						} `xml:"SpecialityRendingConsultation"`
+						UserCreatedAppointment struct {
+							Text         string `xml:",chardata"`
+							UserName     string `xml:"UserName"`
+							UserPosition string `xml:"UserPosition"`
+						} `xml:"UserCreatedAppointment"`
+						VisitStart string `xml:"VisitStart"`
+					} `xml:"HistoryRefusal"`
+				} `xml:"ListHistoryRefusal"`
+				ListHistoryVisit struct {
+					Text         string `xml:",chardata"`
+					HistoryVisit []struct {
+						Text                   string `xml:",chardata"`
+						DateCreatedAppointment string `xml:"DateCreatedAppointment"`
+						DoctorBringReferal     struct {
+							Text string `xml:",chardata"`
+							Nil  string `xml:"nil,attr"`
+						} `xml:"DoctorBringReferal"`
+						DoctorRendingConsultation struct {
+							Text       string `xml:",chardata"`
+							AriaNumber string `xml:"AriaNumber"`
+							Comment    struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"Comment"`
+							CountFreeParticipantIE string `xml:"CountFreeParticipantIE"`
+							CountFreeTicket        string `xml:"CountFreeTicket"`
+							IdDoc                  string `xml:"IdDoc"`
+							LastDate               struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"LastDate"`
+							Name        string `xml:"Name"`
+							NearestDate struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"NearestDate"`
+							Snils struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"Snils"`
+						} `xml:"DoctorRendingConsultation"`
+						IdAppointment          string `xml:"IdAppointment"`
+						SpecialityBringReferal struct {
+							Text string `xml:",chardata"`
+							Nil  string `xml:"nil,attr"`
+						} `xml:"SpecialityBringReferal"`
+						SpecialityRendingConsultation struct {
+							Text                   string `xml:",chardata"`
+							CountFreeParticipantIE string `xml:"CountFreeParticipantIE"`
+							CountFreeTicket        string `xml:"CountFreeTicket"`
+							FerIdSpesiality        string `xml:"FerIdSpesiality"`
+							IdSpesiality           string `xml:"IdSpesiality"`
+							LastDate               struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"LastDate"`
+							NameSpesiality string `xml:"NameSpesiality"`
+							NearestDate    struct {
+								Text string `xml:",chardata"`
+								Nil  string `xml:"nil,attr"`
+							} `xml:"NearestDate"`
+						} `xml:"SpecialityRendingConsultation"`
+						UserCreatedAppointment struct {
+							Text         string `xml:",chardata"`
+							UserName     string `xml:"UserName"`
+							UserPosition string `xml:"UserPosition"`
+						} `xml:"UserCreatedAppointment"`
+						VisitStart string `xml:"VisitStart"`
+					} `xml:"HistoryVisit"`
+				} `xml:"ListHistoryVisit"`
+			} `xml:"GetPatientHistoryResult"`
+		} `xml:"GetPatientHistoryResponse"`
+	} `xml:"Body"`
+}
+
 type SoapPatient struct {
 	Birthday   string `xml:"hub:Birthday"`
 	Name       string `xml:"hub:Name"`

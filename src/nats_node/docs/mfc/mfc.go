@@ -21,7 +21,7 @@
 //      type: basic
 //
 // swagger:meta
-package ourspb
+package mfc
 
 import (
 	model "nats_node/http/model/json"

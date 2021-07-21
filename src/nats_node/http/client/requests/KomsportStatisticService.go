@@ -104,7 +104,7 @@ func SendKomsportStatistic() {
 				logger.Logger.PrintError(err)
 			}
 
-			var m *model.KomsportModel = &model.KomsportModel{}
+			var m *model.StatisticModel = &model.StatisticModel{}
 			err = json.Unmarshal(context.Body, m)
 			if err != nil {
 				logger.Logger.PrintError(err)
@@ -129,20 +129,20 @@ func SendKomsportStatistic() {
 }
 
 func InsertIntoClickHouse() {
-	for range time.Tick(time.Second * 5) {
-		entities := make([]model.KomsportModel, 0)
+	for range time.Tick(time.Second * 30) {
+		entities := make([]model.StatisticModel, 0)
 		batch := &leveldb.Batch{}
 
 		iter := LvlDB.NewIterator(nil, nil)
 		for iter.Next() {
-			m := &model.KomsportModel{}
+			m := &model.StatisticModel{}
 			err = json.Unmarshal(iter.Value(), m)
 			if err != nil {
 				logger.Logger.PrintError(err)
 			} else {
 				entities = append(entities, *m)
-				batch.Delete(iter.Key())
 			}
+			batch.Delete(iter.Key())
 		}
 		err = statisticInsert(entities)
 		if err == nil {
@@ -154,7 +154,7 @@ func InsertIntoClickHouse() {
 	}
 }
 
-func statisticInsert(entities []model.KomsportModel) error {
+func statisticInsert(entities []model.StatisticModel) error {
 	tx, err := ChConnection.Begin()
 	if nil != err {
 		return err
