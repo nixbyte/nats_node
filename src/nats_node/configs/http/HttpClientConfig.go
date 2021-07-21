@@ -30,7 +30,7 @@ func (clientConfig *NatsNodeHttpClientConfig) String() string {
 func SetDefaultClientConfig() *NatsNodeHttpClientConfig {
 	config := &NatsNodeHttpClientConfig{
 		"http://localhost:8080",
-		"tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&database=db1",
+		"tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&password=EgyadeyWi&database=db1",
 		"db1",
 		"statistic",
 		"C4F530D6-E6EC-4C6E-ACE7-231ADFE928CB",

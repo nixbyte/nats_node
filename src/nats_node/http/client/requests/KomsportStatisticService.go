@@ -26,7 +26,7 @@ func init() {
 		logger.Logger.PrintError(err)
 	}
 
-	ChConnection, err = sqlx.Open("clickhouse", "tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&database=db1")
+	ChConnection, err = sqlx.Open("clickhouse", "tcp://rc1b-egh7zplyyhs7s5k8.mdb.yandexcloud.net:9440?username=elk-sport&password=EgyadeyWi&database=db1&secure=true&skip_verify=true")
 	if err != nil {
 		logger.Logger.PrintError(err)
 	}
@@ -136,7 +136,6 @@ func InsertIntoClickHouse() {
 		iter := LvlDB.NewIterator(nil, nil)
 		for iter.Next() {
 			m := &model.KomsportModel{}
-			fmt.Println(string(iter.Value()))
 			err = json.Unmarshal(iter.Value(), m)
 			if err != nil {
 				logger.Logger.PrintError(err)
@@ -145,8 +144,6 @@ func InsertIntoClickHouse() {
 				batch.Delete(iter.Key())
 			}
 		}
-
-		fmt.Println(entities)
 		err = statisticInsert(entities)
 		if err == nil {
 			err = LvlDB.Write(batch, nil)
@@ -214,7 +211,7 @@ func statisticInsert(entities []model.KomsportModel) error {
 const (
 	insertStatistic = `
 				INSERT INTO
-								clickhouse.statistic (
+								db1.statistic (
 														Date,
 														DT,
 														EventDate,
