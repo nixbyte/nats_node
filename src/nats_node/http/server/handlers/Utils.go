@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	jsonmodel "nats_node/http/model/json"
-	model "nats_node/http/model/json"
 	context "nats_node/nats/model"
 	"nats_node/utils/logger"
 	"runtime/debug"
@@ -114,22 +113,4 @@ func requestContextToBytesArray(context *context.RequestContext) ([]byte, error)
 	bytesEncoder := gob.NewEncoder(&bytesBuffer)
 	err := bytesEncoder.Encode(&context)
 	return bytesBuffer.Bytes(), err
-}
-
-func validatePatient(patient model.Patient) (bool, error) {
-	isValid := true
-
-	if len(patient.Firstname) == 0 ||
-		len(patient.Lastname) == 0 ||
-		len(patient.Middlename) == 0 ||
-		len(patient.Phone) == 0 ||
-		patient.Birthday == 0 {
-
-		isValid = false
-	}
-	if isValid == true {
-		return isValid, nil
-	} else {
-		return false, errors.New("Person is not valid or empty")
-	}
 }
